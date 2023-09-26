@@ -1,0 +1,57 @@
+% -----------------------------------------------------------------------
+% Program Number: Final Project Draft #1
+% Program Purpose: Allow the user to play Hangan as many times as they want
+%
+% Created By: Krystian Confeiteiro
+% Created On: 10/22/20
+% Last Modified On: 10/24/20
+%
+% Credit To:
+% By submitting this program with my name, I affirm that the creation and
+% modifications of this program is primarily my own work.
+%
+% Comments:
+% -----------------------------------------------------------------------
+
+clc
+clear
+close all
+
+%welcome prompt
+fprintf('\t\t\t\t-------------------\n\t\t\t\tWelcome to Hangman!\n\t\t\t\t-------------------\n');
+fprintf('\nTo play, press any key!\n\n');under
+pause();
+fprintf('----------------------------------------------------------------------------------------\n\n');
+
+moreYN = 'y';
+while moreYN %loop how many times the user wants to play FOR loop
+    %choose a random word to guess
+    tempWord = 'Hangman';
+    
+    %display the empty Hangman visual and the underscores for the letters
+    for m = 1:length(tempWord)
+        underscore = '_ ';
+        fprintf('%s',underscore(m));
+    end
+    
+    for k = 1:length(tempWord)  %loop the guesses for the length of the random word
+        %prompt the user for guesses and validate 
+        guessU = input('Make a guess: ','s');
+        while length(guessU)~=1 || %not a letter
+            guessU = input('Error, guess a letter or the whole word: ','s');
+        end
+        
+        %determine if the guess matches one of the letters of the word
+        
+        if %the guess matches a letter(s)
+            %display it underneath the empty visual
+        else %the guess =/= a letter)
+            %add wrong guess to box and add a piece to the hangman visual
+        end
+        
+        %ask the user if they want to play again
+        if %they don't want to play again
+            %thank you for playing message
+        end
+    end      
+end

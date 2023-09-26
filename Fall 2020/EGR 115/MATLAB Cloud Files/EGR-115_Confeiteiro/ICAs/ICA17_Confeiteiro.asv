@@ -1,0 +1,38 @@
+% -----------------------------------------------------------------------
+% Program Number: ICA 17
+% Program Purpose: Use database and pull date
+
+% Created By: Krystian Confeiteiro 
+% Created On: 10/29/20
+% Last Modified On: ~
+
+% Credit To: 
+% By submitting this program with my name, I affirm that the creation and 
+% modifications of this program is primarily my own work.
+%
+% Comments:
+% -----------------------------------------------------------------------
+
+clc
+clear 
+close all
+
+%download data
+rawData = readcell('FamersMarketData.xlsx');
+
+%data prep: names, addresses, x, y, hours
+%cell2mat for x, y if they are in cell array
+names = rawData(:,2);
+addresses = rawData(2:end,8:11);
+
+
+%prompt for longitude and latitude
+
+%calculate distance
+distance = sqrt();
+
+%min() + find() [use sort() for extra credit]
+
+
+
+

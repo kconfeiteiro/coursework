@@ -1,0 +1,51 @@
+% -----------------------------------------------------------------------
+% Program Number: ICA 17
+% Program Purpose: Use database and pull date
+
+% Created By: Krystian Confeiteiro 
+% Created On: 10/29/20
+% Last Modified On: ~
+
+% Credit To: 
+% By submitting this program with my name, I affirm that the creation and 
+% modifications of this program is primarily my own work.
+%
+% Comments:
+% -----------------------------------------------------------------------
+
+clc
+clear 
+close all
+
+%download data
+rawData = readcell('FarmersMarketData.xlsx');
+
+%data prep: names, addresses, x, y, hours
+%cell2mat for x, y if they are in cell array
+names = rawData(2:end,2);
+addresses = rawData(2:end,8:11);
+x1 = cell2mat(rawData(2:end,21)); %longitude
+y1 = cell2mat(rawData(2:end,22)); %latitude
+mHours = rawData(2:end,13);
+
+%prompt for longitude and latitude
+x2 = str2double(input('Enter the longitude: '));
+while isnan(x2) || x2>=90 || x2<=0
+    x2 = str2double(input('/nError, re-enter the longitude: '));
+end
+y2 = str2double(input('Enter the latitude: '));
+while isnan(y2) || x<=180 || x>=0
+    y2 = str2double(input('Error, re-enter the latitude: ');
+end
+
+%calculate distance (elemeny-by-element)
+distance = sqrt((x1-x2).^2+(y1-y2).^2);
+
+%min() + find() [use sort() for extra credit]
+rowFound = find(min(distance));
+
+%output nearest famer(s)
+fprintf('--------------------------------------------------------'\n);
+fprintf('Name: %s \nAddress: %s \nTime(s): %s',names(1,rowFound),addresses(1,rowFound),mHours(1,rowFound));
+
+
