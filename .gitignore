@@ -1,5 +1,9 @@
 .history
 .vscode
+.VScodeStats
+
+# my shit
+pyprojecttools/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
