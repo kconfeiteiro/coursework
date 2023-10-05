@@ -8,8 +8,6 @@
 | Course: MA 305 - 06DB
 | Date: 10/04/2023
 ================================
-
-
 """
 
 from math import sqrt
