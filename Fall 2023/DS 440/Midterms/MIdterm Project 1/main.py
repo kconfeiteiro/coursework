@@ -40,7 +40,4 @@ def eval_dtc(
         MODEL, feature_names=feature_names, class_names=class_names, filled=True
     )
 
-    if save_as:
-        fig.savefig(save_as)
-
     return training_acc, testing_acc, txt_repr, fig
