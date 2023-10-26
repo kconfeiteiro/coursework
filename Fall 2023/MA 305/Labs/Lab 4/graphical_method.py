@@ -4,10 +4,10 @@ import numpy as np
 
 
 moreshit = lambda x: x**3 + x**2 - 3 * x - 3
-mapshit2array = lambda func, _list: np.array(list(map(func, _list)))
+mapshit2array = lambda func, _list: list(map(func, _list))
 
 
-def get_shit_data(func, range):
+def stupid_fucking_data(func, range):
     xshit = np.linspace(*range)
     return xshit, mapshit2array(func, list(xshit))
 
@@ -17,22 +17,29 @@ def shit_ax(*data, axe=None, label=None):
 
 
 def plot_some_shit(
-    func=moreshit,
-    range_of_shit=None,
+    data=None,  # Tuple[float, float]
     xtitle=None,
     ytitle=None,
     title=None,
     save_as=None,
     shit=True,
+    yline=None,
+    xline=None,
     xlims=None,  # Tuple[float, float]
     ylims=None,  # Tuple[float, float]
     **kwargs,
 ):
-    fig, axes = plt.subplots()
-    axes.plot(*get_shit_data(func, range_of_shit), **kwargs)
+    fig, axes = plt.subplots(**kwargs)
+    axes.plot(*data, **kwargs)
     axes.set_xlabel(xtitle)
     axes.set_ylabel(ytitle)
     axes.set_title(title)
+
+    if yline:
+        axes.axhline(yline)
+
+    if xline:
+        axes.axvline(xline)
 
     if save_as:
         fig.savefig(save_as)
@@ -49,13 +56,13 @@ def plot_some_shit(
     if ylims:
         axes.set_xlim(*ylims)
 
-    return (fig, axes)
 
-
-shit, othershit = plot_some_shit(
-    range_of_shit=(0, 20, 100),
-    xtitle=r"$x$",
-    ytitle=r"$f(x)$",
-    title=r"Plot for $f(x)=x^3+x^2-3x-3$",
-    xlims=(2.5, 17.5), # not working
-)
+def plot_boogers(data=None, *args, **kwargs):
+    plot_some_shit(
+        data=data,
+        xtitle=r"$x$",
+        ytitle=r"$f(x)$",
+        title=r"Plot for $f(x)=x^3+x^2-3x-3$",
+        *args,
+        **kwargs,
+    )
