@@ -10,11 +10,11 @@ Purpose:
 """
 
 
-def average_and_maximum(_list):
-    # obtain average of list
+def avg_and_max(_list):
+    # average of list
     average = sum(_list) / len(_list)
 
-    # obtain maximum value from list
+    # maximum value from list
     length, maximum = len(_list), _list[0]
     for i in range(1, length):
         if _list[i] > maximum:
@@ -24,9 +24,16 @@ def average_and_maximum(_list):
     return (average, maximum, loc_maximum)
 
 
-def save_to_txt(filename, lines):
-    with open(filename, "w"):
-        file.writelines(list(map(lambda x: "\n" + x), lines))
+def read_txt(filename, mode="r"):
+    with open(filename, mode) as file:
+        lines = file.readlines()
+        return lines
+
+
+def save_to_txt(filename, lines, mode="w"):
+    leading = lambda x: "\n" + x
+    with open(filename, mode):
+        file.writelines(list(map(leading, lines)))
 
 
 if __name__ == "__main__":
@@ -54,12 +61,15 @@ if __name__ == "__main__":
     print(f"{'x':1}{'y':>12}")
     [print(f"{xval:1}{yval:>12}") for xval, yval, in zip(xcol, ycol)]
 
-    x_avg, xmax, xmax_loc = average_and_maximum(xcol)
-    y_avg, ymax, ymax_loc = average_and_maximum(ycol)
+    x_avg, xmax, xmax_loc = avg_and_max(xcol)
+    y_avg, ymax, ymax_loc = avg_and_max(ycol)
 
-    print(f"x-stats\n-------")
-    print(f"average: {x_avg}\nmaximum: {xmax}\nmax location: Index {xmax_loc}")
+    print(f"\nx-stats\n-------")
+    print(f"average: {x_avg}\nMaximum xcol[{xmax_loc}]: {xmax}")
     print(f"\ny-stats\n-------")
-    print(f"average: {y_avg}\nmaximum: {ymax}\nmax location: Index {ymax_loc}")
+    print(f"average: {y_avg}\nMaximum ycol[{ymax_loc}]: {ymax}")
 
-    save_to_txt("out.txt")
+    # read and print data from dat5a.txt
+    print("\nReading data from `dat5a.txt:")
+    dat5a = read_txt("dat5a.txt")
+    [print(line, end="") for line in dat5a]

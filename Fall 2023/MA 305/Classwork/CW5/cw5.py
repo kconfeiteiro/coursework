@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
+
 """
 ========================================================================
-MA305 - CW 5a: your name - date
+MA305 - CW 5: Antonio Cascio - 10/30/2023
 Purpose: Reading and arrays from a datafile and calculate the average
 ========================================================================
 """
-import sys
 
 
 def calc_average(x):
@@ -32,25 +32,25 @@ def calc_max(x):
 #######################################################################
 # ======================================================================
 if __name__ == "__main__":
-    # datafile=input('Enter the name of the file to read data from:')
-    # f=open(datafile,'r')
-    f = sys.stdin
+    f = open("dat5.txt", "r")
 
-    # Read data from a file and store the values in lists
+    # Read the data from a file and store the values in appropriate lists
     line = f.readline()
     print(line, end="")
-    data = f.readlines()
-    print(data)
-
+    n = 0
     x, y = [], []
-    for line in data:
+    while True:
+        line = f.readline()
         Line = line.split()
+        if int(Line[0]) == 0:
+            break
         print(Line)
         x.append(float(Line[2]))
         y.append(float(Line[3]))
+        n += 1
     f.close()
+    print()
 
-    n = len(x)
     print(n, "lines from 'dat5.txt' are read for calculations!")
     print("           x       y")
     for i in range(n):
