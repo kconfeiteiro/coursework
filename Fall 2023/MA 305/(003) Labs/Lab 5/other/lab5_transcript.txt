@@ -1,0 +1,274 @@
+Script started on Oct 3 Oct 2023 01:07:44 PM EDT
+[-bash confeitk@wxsession1 ~/ma305/labs/lab5 ]$ cat lab5.py
+
+import pandas as pd
+
+
+def pull_cols(DATA, *cols):
+    return (DATA[col].to_numpy() for col in cols)
+
+
+def to_int(*vals):
+    return tuple(map(lambda x: int(x), vals))
+
+
+def find_indx(col, condition):
+    return col.index(condition)
+
+
+def calc_heat_index(temp, humidity):
+    if temp > 55:
+        heat_index = (
+            -42.379
+            + 2.04901523 * temp
+            + 10.14333127 * humidity
+            - 0.22475541 * temp * humidity
+            - 6.83783e-3 * (temp**2)
+            - 5.481717e-2 * (humidity**2)
+            + 1.22874e-3 * humidity * (temp**2)
+            + 8.5282e-4 * temp * (humidity**2)
+            - 1.99e-6 * (temp**2) * (humidity**2)
+        )
+    else:
+        heat_index = temp
+
+    return round(heat_index, 3)
+
+
+def calc_avg(data):
+    return sum(data) / len(data)
+
+
+def read_date(date):
+    day = date % 100
+    month = (date / 100) % 100
+    year = date / 10000
+
+    return "{}/{}/{}".format(*to_int(month, day, year))
+
+
+def print_stats(stats):
+    for key, val in stats.items():
+        print(f"{key:10} {val:<12}")
+
+
+def stats(data, *columns):
+    dictionaries = []
+    for column in columns:
+        DATA = list(data[column])
+        col_max, col_min = max(DATA), min(DATA)
+
+        dictionaries.append(
+            {
+                "average": calc_avg(DATA),
+                "maximum": col_max,
+                "max index": find_indx(DATA, col_max),
+                "minimum": col_min,
+                "min index": find_indx(DATA, col_min),
+            }
+        )
+
+    return tuple(dictionaries)
+
+
+DATA = pd.read_csv(
+    "lab5.txt",
+    delim_whitespace=True,
+    comment="#",
+    header=[1],
+    on_bad_lines="skip",
+)
+
+DATA = DATA.rename(columns={"T": "Temperature", "H": "Humidity"})
+DATA["Heat Index"] = pd.DataFrame(
+    list(map(calc_heat_index, DATA.Temperature, DATA.Humidity))
+)
+
+DATA["Std. Date"] = pd.DataFrame(list(map(read_date, DATA.Date)))
+DATA = DATA[["Date", "Std. Date", "Temperature", "Humidity", "Heat Index"]]
+TEMP, HUMIDITY, HEAT_INDEX = stats(DATA, "Temperature", "Humidity", "Heat Index")
+RESULTS = (TEMP, HUMIDITY, HEAT_INDEX)
+
+
+FINALS = {
+    "max_temp_row": DATA.loc[DATA.Temperature == TEMP.get("maximum")],
+    "min_temp_row": DATA.loc[DATA.Temperature == TEMP.get("minimum")],
+    "max_humidity_row": DATA.loc[DATA["Heat Index"] == HUMIDITY.get("maximum")],
+    "max_humidity_row": DATA.loc[DATA["Heat Index"] == HUMIDITY.get("minimum")],
+    "max_heat_index_row": DATA.loc[DATA["Heat Index"] == HEAT_INDEX.get("maximum")],
+    "min_heat_index_row": DATA.loc[DATA["Heat Index"] == HEAT_INDEX.get("minimum")],
+    "days_below_freezing": DATA.loc[DATA.Temperature < 32],
+    "days_above_avg_temp": DATA.loc[DATA.Temperature > TEMP.get("average")],
+}
+
+num_days_below_freezing = len(FINALS.get("days_below_freezing").index)
+num_days_above_avg = len(FINALS.get("days_above_avg_temp").index)
+
+# for key, row in finals.items():
+#     prompt = key.replace("_", " ")
+#     print(f"{prompt.title()}\n", "-" * 15)
+#     print(row.iloc[0, :], "\n")
+
+hline = "=" * 15
+
+print("\n {0} PART C: {0}\n".format(hline))
+_prompt = f"{'Stat':10} {'Value':<15}"
+_prompt1 = "{0:10} {0:<15}".format("------")
+types = "Temprature, Humidity, Heat Index".split(",")
+for results, dtype in zip(RESULTS, types):
+    print(f"FOR: {dtype}")
+    print(_prompt)
+    print(_prompt1)
+    print_stats(results)
+    print("\n\n")
+
+print("\n {0} PART D & E: {0}".format(hline))
+print(f"\nNumber of day above below freezing: {num_days_below_freezing}")
+print(f"Days above average temperature: {num_days_above_avg}")
+
+print("\nDates above average temperature:")
+print(FINALS.get("days_above_avg_temp")[["Std. Date", "Temperature"]])
+
+print("\nDates below freezing temperature:")
+print(FINALS.get("days_below_freezing")[["Std. Date", "Temperature"]])
+
+print("\n {0} STEP 3: {0}".format(hline))
+print("\nNumber of days greater than 50 degrees:")
+n_days_50 = DATA.loc[DATA.Temperature > 50][["Std. Date", "Temperature"]]
+print(n_days_50)
+
+print("\n\nNumber of days between 0 and 50 degrees:")
+n_days_0to50 = DATA.loc[(DATA.Temperature > 0) & (DATA.Temperature < 50)][["Std. Date", "Temperature"]]
+print(n_days_0to50)
+
+[-bash confeitk@wxsession1 ~/ma305/labs/lab5 ]$ chmod u+x lab5.py
+[-bash confeitk@wxsession1 ~/ma305/labs/lab5 ]$ ./lab5.py
+
+ =============== PART C: ===============
+
+FOR: Temprature
+Stat       Value
+------     ------
+average    28.9
+maximum    95
+max index  20
+minimum    -26
+min index  25
+
+
+
+FOR:  Humidity
+Stat       Value
+------     ------
+average    43.4
+maximum    98
+max index  8
+minimum    0
+min index  7
+
+
+
+FOR:  Heat Index
+Stat       Value
+------     ------
+average    31.11455
+maximum    132.353
+max index  28
+minimum    -26.0
+min index  25
+
+
+
+
+ =============== PART D & E: ===============
+
+Number of day above below freezing: 21
+Days above average temperature: 21
+
+Dates above average temperature:
+   Std. Date  Temperature
+0     5/1/50           89
+1     1/5/53           56
+3   10/19/56           32
+4    3/25/57           30
+7    9/23/65           50
+10   11/9/68           85
+13   7/17/76           43
+14    8/8/77           88
+15   1/17/78           38
+17   7/11/79           53
+19  11/15/80           49
+20  10/14/81           95
+21   3/11/82           42
+22    4/9/82           80
+26   1/12/85           40
+28   5/20/88           92
+29  12/27/88           57
+30   3/25/89           36
+32    2/9/93           60
+34   9/10/93           51
+35  11/26/93           29
+
+Dates below freezing temperature:
+   Std. Date  Temperature
+2    2/25/54           13
+4    3/25/57           30
+5    6/18/57           17
+6    10/7/64           10
+8    4/22/66          -13
+9    10/1/66          -13
+11  10/12/69           -5
+12   11/9/73          -16
+16   9/18/78            9
+18   8/15/79           -7
+23  10/10/82           -4
+24  10/13/84           21
+25   11/8/84          -26
+27  12/13/85          -10
+31   8/22/91            3
+33    4/5/93           28
+35  11/26/93           29
+36    2/2/96          -16
+37  11/22/96          -15
+38   4/14/97          -22
+39   8/21/99            7
+
+ =============== STEP 3: ===============
+
+Number of days greater than 50 degrees:
+   Std. Date  Temperature
+0     5/1/50           89
+1     1/5/53           56
+10   11/9/68           85
+14    8/8/77           88
+17   7/11/79           53
+20  10/14/81           95
+22    4/9/82           80
+28   5/20/88           92
+29  12/27/88           57
+32    2/9/93           60
+34   9/10/93           51
+
+
+Number of days between 0 and 50 degrees:
+   Std. Date  Temperature
+2    2/25/54           13
+3   10/19/56           32
+4    3/25/57           30
+5    6/18/57           17
+6    10/7/64           10
+13   7/17/76           43
+15   1/17/78           38
+16   9/18/78            9
+19  11/15/80           49
+21   3/11/82           42
+24  10/13/84           21
+26   1/12/85           40
+30   3/25/89           36
+31   8/22/91            3
+33    4/5/93           28
+35  11/26/93           29
+39   8/21/99            7
+
+exit
+Script done on Oct 3 Oct 2023 01:09:24 PM EDT
