@@ -1,12 +1,13 @@
-from math import sqrt
-from typing import Any, NamedTuple
-
 import numpy as np
 import pandas as pd
 
 
 def gaussian(x, mean, stdev):
     return np.exp(-(((x - mean) / stdev) ** 2) / 2) / (stdev * np.sqrt(2 * np.pi))
+
+
+def mapfunc(data, func):
+    return data, list(map(func, data))
 
 
 def calc_area(srange=(-10, 10, 100), **kwargs):
@@ -23,11 +24,11 @@ def calc_area(srange=(-10, 10, 100), **kwargs):
     Float or int
         The sum of your dataset.
     """
-    _x, _dx = np.linspace(srange, retstep=True, **kwargs)
-    return sum(gaussian(_x)) * _dx
+    _x, _dx = np.linspace(*srange, retstep=True, **kwargs)
+    return sum(gaussian(_x, 0, 1)) * _dx
 
 
-def deriv_approx(data, func, step):
+def deriv_approx(data, step=1e-3, **kwargs):
     """
     Approximates a first-order derivative for a given function.
 
@@ -45,8 +46,10 @@ def deriv_approx(data, func, step):
     Sequence
         A numerical sequence of the estimated first-order derivative values
     """
-    approx = lambda x: ((func(x + step) - step)) / step
-    return list(map(approx, data))
+    approx = lambda x: ((gaussian(x + step, **kwargs) - step)) / step
+    approximation = approx(data)
+
+    return approximation
 
 
 def find_indx(col, condition):
@@ -96,3 +99,7 @@ def split_df(dataframe: pd.DataFrame = None):
         Returns a Tuple of `pd.DataFrame` objects
     """
     return tuple([dataframe[col] for col in dataframe.columns])
+
+
+def normalize(data):
+    return data / max(data)
