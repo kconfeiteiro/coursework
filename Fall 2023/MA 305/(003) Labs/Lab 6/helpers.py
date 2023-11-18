@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class Stats(NamedTuple):
-    average: int | float = None
+    avg: int | float = None
     min: int | float = None
     max: int | float = None
     product: int | float = None
@@ -27,7 +27,7 @@ def find_indx(col, condition):
     return col.index(condition)
 
 
-def stats(data):
+def stats(*datasets):
     """
     Returns statistical information about an array.
 
@@ -41,15 +41,19 @@ def stats(data):
     _type_
         _description_
     """
-    return Stats(
-        average=sum(data) / len(data),
-        min=np.argmin(data),
-        max=np.argmax(data),
-        product=np.product(data),
-        stdev=np.std(data),
-        variance=np.std(data) ** 2,
-        median=np.median(data),
+    _stats = tuple(
+        Stats(
+            avg=sum(data) / len(data),
+            min=np.argmin(data),
+            max=np.argmax(data),
+            product=np.prod(data),
+            stdev=np.std(data),
+            variance=np.std(data) ** 2,
+            median=np.median(data),
+        )
+        for data in datasets
     )
+    return _stats[0] if len(datasets) == 1 else _stats
 
 
 def display_table(data):
@@ -86,7 +90,7 @@ def create_matrix(cols, rows):
     return matrix
 
 
-def solve_tridiag(a, b, c, f):
+def solve_tridiag(matrix, f):
     """
     Solves a tridiagonal matrix system [a c b][x] = [f]
 
@@ -101,6 +105,10 @@ def solve_tridiag(a, b, c, f):
     f (Sequence[int]):
         [f0,f1,...,fn-1] right hand side vector
     """
+    # a, b, c
+    a = np.diagonal(matrix, -1)
+    b = np.diagonal(matrix, +1)
+    c = np.diagonal(matrix, 0)
 
     n = len(a)
     y, alpha, beta = np.zeros(n), np.zeros(n), np.zeros(n)
@@ -131,3 +139,32 @@ def matrix_ops(matrix):
         mrowsum=max(sum(col) for col in list(B)),
         sqrtsum=sqrt(sum(i**2 for i in matrix.flatten())),
     )
+
+
+def read_n_prep(*paths, **kwargs):
+    READ_DATA = [np.loadtxt(path).flatten() for path in paths]
+    return pd.DataFrame(READ_DATA, **kwargs).transpose()
+
+
+def split_df(dataframe: pd.DataFrame = None):
+    """
+    Splits your dataframe into separate columns based on their columns.
+
+    Parameters
+    ----------
+    dataframe : pd.DataFrame, optional
+        The dataframe that you want to split, by default None
+
+    Returns
+    -------
+    Tuple of `pd.DataFrame` objects
+        Returns a Tuple of `pd.DataFrame` objects
+    """
+    return tuple([dataframe[col] for col in dataframe.columns])
+
+
+def separate(*cols, dataframe):
+    if len(cols) > 1:
+        return tuple(dataframe[col] for col in cols)
+    else:
+        return dataframe[cols]
