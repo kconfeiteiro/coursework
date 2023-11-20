@@ -1,0 +1,56 @@
+< HTML>< HEAD>
+< title> My First Homepage < /title>
+< /HEAD>
+<!-- red on black, cyan   Note: this is a comment -->
+< BODY BGCOLOR="#000030" TEXT="#ff0000" LINK="#00ffff" VLINK="#00ffff" ALINK="#FF0000">
+<!-- black on lightyellow, blue, magenta
+<BODY bgcolor="#FFFFCC" text="000000" link="#FF0000" 
+ vlink="#FF00FF"> -->
+
+< Center>
+< IMG SRC="my_photo.jpg" ALT="My Name" HEIGHT=180 WIDTH=180> 
+< /Center>
+
+< FONT SIZE=4>< I> Home Page under Construction < /I>< /FONT>
+< HR size=1>
+< CENTER>< H1> 
+?????? 's Homepage
+< HR width=70% > 
+< /H1>< /CENTER>
+
+< H2> Some Favorite Web Sites: </H2>
+<!-- here is a numbered list -->
+< OL>
+< LI> < A href="http://gams.nist.gov">
+< B>  A Guide to Available Mathematical Software < /B> < /A> 
+< LI> < A href="http://www.siam.org/">
+< B>  Society for Industrial and Applied Mathematics < /B> < /A> 
+< LI> < A href="https://erau.edu/degrees/master/data-science">
+< B>  MS in Data Science @ ERAU < /B> < /A> 
+< /OL>
+< HR size=3>
+
+<!-- here is an unumbered list -->
+< UL>
+< LI> < A href="https://erau.instructure.com/courses/144188">
+< B> MA305 Canvas Site < /B> < /A>
+< LI> < A href="http://seismo.berkeley.edu/~rallen/resources/html/HTMLPrimerAll.html">
+< B> A Beginner's Guide to HTML from NCSA < /B>< /A> < I> superb < /I>
+< LI> < A href="http://pages.erau.edu/~YOUR_ERNIE_NAME">
+< B> My own web page ! < /B> < /A>
+< /UL>
+< HR size=3>
+
+< PRE> Preformated text. Type a couple of lines here
+	to see what happens, e.g. your name, major, ...
+< /PRE>
+< HR size=3>
+
+< ADDRESS>
+email: & nbsp; < A HREF="mailto:?????@my.erau.edu">  ?????@my.erau.edu < /A>
+< /ADDRESS>
+< I> & copy;2022 & nbsp;  ????? < /I>
+& nbsp; < FONT SIZE=1> Last modified: 16 November 2022 < /FONT>
+
+< /BODY>
+< /HTML>
