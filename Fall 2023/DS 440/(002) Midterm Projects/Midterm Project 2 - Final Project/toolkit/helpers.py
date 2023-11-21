@@ -26,6 +26,7 @@ def separate(
     return tuple(dataframe[col] for col in cols)
 
 
+# FIXME - this function does not work
 def split_large_data(
     dataframe: pd.DataFrame = ...,
     n_bins: int = ...,
