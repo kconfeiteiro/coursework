@@ -1,22 +1,29 @@
-import os
 import re
 from typing import List, Literal, Sequence, Tuple
 
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from toolkit import SplitData
 
 
-def prepare_data(xcols, ycol, data, test_size=0.2, random_state=1, **kwargs):
-    X, y = data[xcols], data[ycol]
-    return SplitData(
-        *train_test_split(
-            X, y, test_size=test_size, random_state=random_state, **kwargs
-        )
+def prepare_data(
+    X=None,
+    y=None,
+    xcols=None,
+    ycol=None,
+    data=None,
+    test_size=0.2,
+    random_state=1,
+    **kwargs,
+):
+    if all(val for val in [xcols, ycol, data]):
+        X, y = data[xcols], data[ycol]
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state, **kwargs
     )
+
+    return SplitData(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
 
 
 def separate(
@@ -26,24 +33,8 @@ def separate(
     return tuple(dataframe[col] for col in cols)
 
 
-# FIXME - this function does not work
-def split_large_data(
-    dataframe: pd.DataFrame = ...,
-    n_bins: int = ...,
-    save_as: str = None,
-    file_etx: Literal[".csv", ".txt"] = ".txt",
-) -> None:
-    BINNED = [
-        dataframe.iloc[i : i + n_bins, :] for i in range(0, dataframe.shape[0], n_bins)
-    ]
-
-    if save_as:
-        for i, data in enumerate(BINNED):
-            file = f"{save_as}_{i}.{file_etx}"
-            data.to_csv(file)
-            print(f"Saved '{file}' ({i}/{len(BINNED)})")
-    else:
-        return tuple(BINNED)
+def replacements(data):
+    return {f"{key}": i for i, key in enumerate(data)}
 
 
 def to_txt(

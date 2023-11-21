@@ -1,4 +1,4 @@
-from typing import Any, Dict, NamedTuple
+from typing import Any, Dict, NamedTuple, Sequence
 
 
 class Evaluations(NamedTuple):
@@ -23,7 +23,7 @@ class Evaluations(NamedTuple):
 
 
 class SplitData(NamedTuple):
-    X_train = None
-    X_test = None
-    y_train = None
-    y_test = None
+    X_train: Sequence[int | float]
+    X_test: Sequence[int | float]
+    y_train: Sequence[int | float]
+    y_test: Sequence[int | float]
