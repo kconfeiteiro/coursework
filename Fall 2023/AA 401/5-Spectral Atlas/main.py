@@ -1,34 +1,54 @@
 import os
-
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 
-
-def list_dir(rel_path):
-    ABS = os.path.abspath(rel_path)
-    listed_paths = os.listdir(rel_path)
-    prepend = lambda path: os.path.join(ABS, path)
-    return list(map(prepend, listed_paths))
-
-
-def read_file(*paths, columns=None, as_type=None, **kwargs):
-    read_data = []
-    for file in paths:
-        DATA = pd.read_csv(file, **kwargs)
-
-        if columns:
-            DATA = DATA[columns]
-
-        if as_type:
-            DATA = DATA.astype(as_type)
-
-        read_data.append(DATA)
-
-    return read_data if len(paths) > 1 else read_data[0]
-
+from helpers import list_dir, read_spectra, split, uniquefilename
 
 CONFIG = {
-    "columns": "lk   ukf_g8v   uks_g8v        fh       fse        fl         fd".split(),
     "files": list_dir("DATA"),
+    "spectral types": [
+        "O5V",
+        "O9V",
+        "B3V",
+        "B9V",
+        "A0V",
+        "A5V",
+        "F2V",
+        "F8V",
+        "G2V",
+        "G8V",
+        "K5V",
+        "M0V",
+        "M6V",
+    ],
+    "xrange": (3500, 7000),
+    "read kwargs": {
+        "delim_whitespace": True,
+        "comment": "#",
+        "usecols": (0, 1),
+        "names": ["Wavelength", "Flux"],
+    },
+    "title": "A Sequence of Stellar Flux Profiles",
+    "save as": uniquefilename("spectral_atlas.jpg", "PLOTS")[0],
 }
+
+RDATA = read_spectra(
+    *CONFIG["files"],
+    normalize_col="Flux",
+    **CONFIG["read kwargs"],
+)
+
+fig, axes = plt.subplots(figsize=(7, 12))
+for i, data in enumerate(RDATA, 1):
+    data["Flux"] = data["Flux"].apply(lambda x: x + i)
+    axes.plot(*split(data), label=f"Spectra {i}")
+    i += 1
+
+axes.set_xlim(*CONFIG["xrange"])
+axes.set_title(CONFIG["title"])
+axes.set_ylabel(r"Flux, $F$ ($W$) (w/ linear shift)")
+axes.set_xlabel(r"Wavelength, $\lambda$ ($\AA$)")
+axes.legend(loc="upper right", bbox_to_anchor=(1.3, 1.00))
+fig.tight_layout()
+fig.savefig(CONFIG["save as"])
+plt.show()
