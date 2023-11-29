@@ -16,7 +16,7 @@ from toolkit.evaluations import TSNEeval
 from toolkit.models import dtregressor, rfregressor
 
 CONFIG = {
-    "data": "DATA\\School_Attendance_by_Student_Group_and_District__2021-2022.txt",
+    "data": "DATA\School_Attendance_by_Student_Group_and_District__2021-2022.txt",
     "plots pth": "PLOTS",
     "test size": 0.2,
     "random forest": {"n_estimators": 100, "random_state": 1},
@@ -73,13 +73,24 @@ print("Train R^2 value (RFR): ", RFR.score(pdata.X_train, y_pred_train_RFR))
 X_test, X_train = pdata.X_test, pdata.X_train
 y_test, y_train = pdata.y_test, pdata.y_train
 
-# t-sne visualizations
+# t-sne configurations
 TSNE_CFG = {
-    "n_components": 2,
-    "lrate": "auto",
-    "init": "random",
-    "perplexity": 5,
+    "tsne": {
+        "n_components": 2,
+        "lrate": "auto",
+        "init": "random",
+        "perplexity": 5,
+        "X_data": features,
+    },
+    "scatter_cfg": {"c": list(to_predict.values), "s": 8},
+    "plt_cfg": {"nrows": 1, "ncols": 1},
+    "img_cfg": {"cmap": "jet", "interpolation": "none"},
 }
 
-TSNE = TSNEeval(**TSNE_CFG)
-TSNE.initialize(X_train=X_train)
+TSNE = TSNEeval(**TSNE_CFG["tsne"])
+TSNE.initialize(fit_transform=True)
+TSNE.visualize(
+    figtitle="t-SNE Evaluations (w/ 'fit transform')",
+    plt_cfg=TSNE_CFG["plt_cfg"],
+    scatter_cfg=TSNE_CFG["scatter_cfg"],
+)

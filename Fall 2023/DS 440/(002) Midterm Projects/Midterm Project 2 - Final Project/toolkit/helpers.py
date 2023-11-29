@@ -29,8 +29,8 @@ def prepare_data(
         X_test=X_test,
         y_train=y_train,
         y_test=y_test,
-        X_data=X,
-        y_data=y,
+        X=X,
+        y=y,
     )
 
 

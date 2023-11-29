@@ -1,9 +1,9 @@
-from typing import Dict, Literal, Sequence
+from typing import Any, Dict, Literal, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from helpers import strmatch, to_txt
+from .helpers import strmatch, to_txt
 from sklearn.manifold import TSNE
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -13,13 +13,14 @@ from sklearn.metrics import (
     f1_score,
     mean_absolute_error,
     mean_squared_error,
+    pairwise_distances,
     precision_score,
     r2_score,
     recall_score,
     roc_curve,
 )
 
-from toolkit import Evaluations, SplitData, X_data, Y_data
+from toolkit import Evaluations
 
 
 class EvaluateModel:
@@ -201,19 +202,21 @@ class TSNEeval:
         self.y_data = y_data
 
         self.tsne = None
-        self.pathcollection = None
 
     def initialize(
-        self, fit_transform: bool = False, X_train: Sequence[float] = None, **kwargs
+        self,
+        fit_transform: bool = False,
+        return_data: bool = False,
+        **kwargs,
     ) -> None:
-        if fit_transform and X_train:
+        if fit_transform:
             self.tsne = TSNE(
                 n_components=self.n_components,
                 learning_rate=self.lrate,
                 init=self.init,
                 perplexity=self.perplexity,
                 **kwargs,
-            ).fit_transform(X_train)
+            ).fit_transform(self.X_data)
         else:
             self.tsne = TSNE(
                 n_components=self.n_components,
@@ -224,16 +227,31 @@ class TSNEeval:
             )
 
         self.pathcollection = (self.tsne[:, 0], self.tsne[:, 1])
+        if return_data:
+            return self.pathcollection
 
     def visualize(
         self,
+        figtitle: str = None,
+        xlabel: str = None,
+        ylabel: str = None,
         save_as: str = None,
         display: bool = True,
         plt_cfg: Dict = None,
         scatter_cfg: Dict = None,
+        return_figure: bool = False,
     ) -> plt.subplots:
         fig, axes = plt.subplots(**plt_cfg)
         axes.scatter(*self.pathcollection, **scatter_cfg)
+
+        if figtitle:
+            axes.set_title(figtitle)
+
+        if xlabel:
+            axes.set_xlabel(xlabel)
+
+        if ylabel:
+            axes.set_ylabel(ylabel)
 
         if save_as:
             fig.savefig(save_as)
@@ -241,10 +259,33 @@ class TSNEeval:
         if display:
             plt.show()
 
-    @property
-    def tsne(self):
-        return self.tsne
+        if return_figure:
+            return fig, axes
 
-    @tsne.setter
-    def tsne(self, value) -> None:
-        self.tsne = value
+    def heatplot(
+        self,
+        model: Any = None,
+        plt_cfg: Dict = None,
+        img_cfg: Dict = None,
+        save_as: str = None,
+        display: bool = True,
+    ):
+        pairwisedist = pairwise_distances(self.X_values, metric="cosine")
+        # sorting by labels
+        sorted_pairwisedist = pairwisedist[np.argsort(model.labels_)][
+            :, np.argsort(model.labels_)
+        ]
+        labels = model.labels_[np.argsort(model.labels_)]
+
+        # keeping the distance values between 0 and 1
+        sorted_pairwisedist = sorted_pairwisedist / np.max(sorted_pairwisedist)
+        sorted_similarity = 1 - sorted_pairwisedist / np.max(sorted_pairwisedist)
+
+        fig, axes = plt.subplots(**plt_cfg)
+        axes.imshow(sorted_similarity, **img_cfg)
+
+        if save_as:
+            fig.savefig(save_as)
+
+        if display:
+            plt.show()
