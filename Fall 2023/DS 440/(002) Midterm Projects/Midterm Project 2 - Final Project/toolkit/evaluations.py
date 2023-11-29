@@ -1,9 +1,10 @@
-from typing import Literal, Sequence
+from typing import Dict, Literal, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from helpers import strmatch, to_txt
+from sklearn.manifold import TSNE
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
     accuracy_score,
@@ -18,7 +19,7 @@ from sklearn.metrics import (
     roc_curve,
 )
 
-from toolkit import Evaluations
+from toolkit import Evaluations, SplitData, X_data, Y_data
 
 
 class EvaluateModel:
@@ -180,3 +181,70 @@ class EvaluateModel:
     @property
     def data(self):
         return self._data
+
+
+class TSNEeval:
+    def __init__(
+        self,
+        n_components: int = 2,
+        lrate: str = "auto",
+        init: str = "random",
+        perplexity: int = 5,
+        X_data: Sequence[float | int] = None,
+        y_data: Sequence[float | int] = None,
+    ) -> None:
+        self.n_components = n_components
+        self.lrate = lrate
+        self.init = init
+        self.perplexity = perplexity
+        self.X_data = X_data
+        self.y_data = y_data
+
+        self.tsne = None
+        self.pathcollection = None
+
+    def initialize(
+        self, fit_transform: bool = False, X_train: Sequence[float] = None, **kwargs
+    ) -> None:
+        if fit_transform and X_train:
+            self.tsne = TSNE(
+                n_components=self.n_components,
+                learning_rate=self.lrate,
+                init=self.init,
+                perplexity=self.perplexity,
+                **kwargs,
+            ).fit_transform(X_train)
+        else:
+            self.tsne = TSNE(
+                n_components=self.n_components,
+                learning_rate=self.lrate,
+                init=self.init,
+                perplexity=self.perplexity,
+                **kwargs,
+            )
+
+        self.pathcollection = (self.tsne[:, 0], self.tsne[:, 1])
+
+    def visualize(
+        self,
+        save_as: str = None,
+        display: bool = True,
+        plt_cfg: Dict = None,
+        scatter_cfg: Dict = None,
+    ) -> plt.subplots:
+        fig, axes = plt.subplots(**plt_cfg)
+        axes.scatter(*self.pathcollection, **scatter_cfg)
+
+        if save_as:
+            fig.savefig(save_as)
+
+        if display:
+            plt.show()
+
+    @property
+    def tsne(self):
+        return self.tsne
+
+    @tsne.setter
+    def tsne(self, value) -> None:
+        self.tsne = value

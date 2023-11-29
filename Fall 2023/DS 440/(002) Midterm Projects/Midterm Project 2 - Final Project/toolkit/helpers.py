@@ -19,11 +19,19 @@ def prepare_data(
 ):
     if all(val for val in [xcols, ycol, data]):
         X, y = data[xcols], data[ycol]
+
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state, **kwargs
     )
 
-    return SplitData(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+    return SplitData(
+        X_train=X_train,
+        X_test=X_test,
+        y_train=y_train,
+        y_test=y_test,
+        X_data=X,
+        y_data=y,
+    )
 
 
 def separate(

@@ -23,7 +23,9 @@ class Evaluations(NamedTuple):
 
 
 class SplitData(NamedTuple):
-    X_train: Sequence[int | float]
-    X_test: Sequence[int | float]
-    y_train: Sequence[int | float]
-    y_test: Sequence[int | float]
+    X_train: Sequence[int | float] = None
+    X_test: Sequence[int | float] = None
+    y_train: Sequence[int | float] = None
+    y_test: Sequence[int | float] = None
+    X: Sequence[int | float] = None
+    y: Sequence[int | float] = None

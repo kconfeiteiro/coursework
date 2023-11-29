@@ -1,0 +1,26 @@
+{
+    "dataOS": "DATA\\School_Attendance_by_Student_Group_and_District__2021-2022.txt",
+    "plots pth": "PLOTS",
+    "test size": 0.2,
+    "random forest": {
+        "n_estimators": 100,
+        "random_state": 1
+    },
+    "decision tree": {
+        "max_depth": 5,
+        "random_state": 1
+    },
+    "features": [
+        "District name",
+        "Student group",
+        "Category",
+        "2021-2022 student count - year to date",
+        "2020-2021 student count",
+        "2019-2020 student count"
+    ],
+    "prediction options": {
+        "A": "2021-2022 attendance rate - year to date",
+        "B": "2020-2021 attendance rate",
+        "C": "2019-2020 attendance rate"
+    }
+}

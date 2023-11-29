@@ -5,14 +5,14 @@ DS 440 - 01DB
 Final Project
 Created:
 Due:
-Last Edited: 11/21/2023
+Last Edited: 11/28/2023
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 import toolkit.helpers as hp
+from toolkit.evaluations import TSNEeval
 from toolkit.models import dtregressor, rfregressor
 
 CONFIG = {
@@ -43,7 +43,7 @@ to_predict = DATA[CONFIG["prediction options"]["A"]]
 
 
 features = features.replace(
-    {  # TODO - automate this (in a function)
+    {
         "Category": hp.replacements(features["Category"].unique()),
         "District name": hp.replacements(features["District name"].unique()),
         "Student group": hp.replacements(features["Student group"].unique()),
@@ -60,11 +60,26 @@ pdata = hp.prepare_data(X=features, y=to_predict, test_size=CONFIG["test size"])
 DTR = dtregressor(xtrain=pdata.X_train, ytrain=pdata.y_train, **CONFIG["decision tree"])
 y_pred_train_DTR = DTR.predict(pdata.X_train)
 y_pred_test_DTR = DTR.predict(pdata.X_test)
-print("Test R^2 value (DTR): ", DTR.score(pdata.X_test, y_pred_test_DTR))
-print("Train R^2 value (DTR): ", DTR.score(pdata.X_train, y_pred_train_DTR))
 
 RFR = rfregressor(xtrain=pdata.X_train, ytrain=pdata.y_train, **CONFIG["random forest"])
 y_pred_train_RFR = RFR.predict(pdata.X_train)
 y_pred_test_RFR = RFR.predict(pdata.X_test)
+
+print("Test R^2 value (DTR): ", DTR.score(pdata.X_test, y_pred_test_DTR))
+print("Train R^2 value (DTR): ", DTR.score(pdata.X_train, y_pred_train_DTR))
 print("Test R^2 value (RFR): ", RFR.score(pdata.X_test, y_pred_test_RFR))
 print("Train R^2 value (RFR): ", RFR.score(pdata.X_train, y_pred_train_RFR))
+
+X_test, X_train = pdata.X_test, pdata.X_train
+y_test, y_train = pdata.y_test, pdata.y_train
+
+# t-sne visualizations
+TSNE_CFG = {
+    "n_components": 2,
+    "lrate": "auto",
+    "init": "random",
+    "perplexity": 5,
+}
+
+TSNE = TSNEeval(**TSNE_CFG)
+TSNE.initialize(X_train=X_train)
