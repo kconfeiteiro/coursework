@@ -82,7 +82,6 @@ As per [this Canvas announcement](https://erau.instructure.com/courses/163647/di
 - [ ]  Visualize machine learning models with `sklearn` or other libraries
 - [ ]  Research and gather relevant sources for the project
 - [ ]  Write [final report](https://www.overleaf.com/project/654fd934d42bfeadc125a7e7) (in $\LaTeX$)
-- [ ]  Download the dataset from Kaggle
 
 ## Data
 
@@ -94,13 +93,13 @@ This [dataset](https://data.ct.gov/Education/School-Attendance-by-Student-Group-
 - Students with disabilities
 - Students who qualify for free/reduced lunch
 - English learners
-- All high needs students
-- Non-high needs students
+- All high-needs students
+- Non-high-needs students
 - Students by race/ethnicity (Hispanic/Latino of any race, Black or African American, White, All other races)
 
-Attendance rates are provided for each student group by district and for the state. Students who are considered high needs include students who are English language learners, who receive special education, or who qualify for free and reduced lunch.
+Attendance rates are provided for each student group by district and for the state. Students considered high needs include English language learners, who receive special education, or who qualify for free and reduced lunch.
 
-When no attendance data is displayed in a cell, data have been suppressed to safeguard student confidentiality, or to ensure that statistics based on a very small sample size are not interpreted as equally representative as those based on a sufficiently larger sample size. For [more information on CSDE data suppression policies](http://edsight.ct.gov/relatedreports/BDCRE%20Data%20Suppression%20Rules.pdf).
+When no attendance data is displayed in a cell, data have been suppressed to safeguard student confidentiality, or to ensure that statistics based on a minimal sample size are not interpreted as equally representative as those based on a sufficiently larger sample size, for [more information on CSDE data suppression policies](http://edsight.ct.gov/relatedreports/BDCRE%20Data%20Suppression%20Rules.pdf).
 
 
 # Sources
