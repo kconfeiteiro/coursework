@@ -1,12 +1,81 @@
-# MA-305 Final Project
+# 1. Table of Contents
+- [1. Table of Contents](#1-table-of-contents)
+- [2. MA-305 Final Project](#2-ma-305-final-project)
+  - [2.1. Initial Outline](#21-initial-outline)
+    - [2.1.1. Additional Notes](#211-additional-notes)
+  - [2.2. Project II: Root Finding using Newton’s Method](#22-project-ii-root-finding-using-newtons-method)
+    - [2.2.1. Part (a)](#221-part-a)
+    - [2.2.2. Part (b)](#222-part-b)
+    - [2.2.3. Part (c)](#223-part-c)
+    - [2.2.4. Hints](#224-hints)
+- [3. Project Checklist](#3-project-checklist)
+
+# 2. MA-305 Final Project
 
 The main object of this project is to pick a project from the [list of projects](https://drive.google.com/file/d/1uu50InrSzw6umkXOIvHz8SUAgQlYyXd0/view?usp=drive_link) and solve the problems (of that project) accordingly.
 
 For this project, my partner [Antonio Cascio](https://www.linkedin.com/in/antonio-cascio
 ) and I have chose ***Project II: Root Finding using Newton’s Method***. Our project will be outlined in this `README.md` file.
 
-## Project II: Root Finding using Newton’s Method
-Write a function, `newton()`, to implement [Newton’s method](https://en.wikipedia.org/wiki/Newton%27s_method) for finding a root of a given function, $F(x)$;
+## 2.1. Initial Outline
+
+Our (given) function (and its derivative) takes the form
+
+$$
+\begin{align}
+f(x) &= x^3 -2x-5; \\
+f'(x) &= 3x^2-2.
+\end{align}
+$$
+
+Using formulas listed below, we have:
+
+$$
+\begin{align}
+x_{n+1} &= x_n - \frac{f(x_n)}{f'(x_n)} \\
+&= \boxed{x_n - \frac{x_n^3-2x_n-5}{3x_n^2-2}.}
+\end{align}
+$$
+
+### 2.1.1. Additional Notes
+
+*The Newton's method* is an iterative numerical technique used to find the roots of a real-valued function. To find the zeros of a cubic equation using *Newton's method*, you would start with an initial guess and iteratively refine it.
+
+The general form of a cubic equation is,
+
+
+
+$$
+\begin{equation}
+f(x) = ax^3 + bx^2 + cx + d = 0
+\end{equation}
+$$
+
+where $a$, $b$, $c$, and $d$ are constants.
+
+The iterative formula for Newton's method is given by:
+
+$$
+\begin{equation}
+x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}
+\end{equation}
+$$
+
+Where:
+
+- $x_{n+1}$ is the next approximation.
+- $x_n$ is the current approximation.
+- $f(x)$ is the value of the function at $x_n$
+- $f'(x_n)$ is the derivative of the function with respect to $x$ at $x_n$
+
+For a cubic equation, the process involves applying this formula until you converge to a root. The choice of the initial guess is crucial for the convergence of the method.
+
+
+## 2.2. Project II: Root Finding using Newton’s Method
+
+### 2.2.1. Part (a)
+
+Write a function, `newton_raphson()`, to implement [_Newton’s method_](https://en.wikipedia.org/wiki/Newton%27s_method) for finding a root of a given function, $F(x)$;
 
 $$
 \begin{gather}
@@ -29,11 +98,9 @@ Your program should output the input values ($x_0$ and $\epsilon$) at the beginn
 
 Then, upon convergence, the number of iterations $n$, the root $x_n$ and the residual $|F(x_n)|$. The values of $F(x_n)$ and $F_0(x_n)$ may be computed in a function or two separate functions.
 
-### Part (a)
+Set $\text{TOL} = 10^{-12}$, and find the real root of the ***************Newton’s cubic***************, $f(x) = x^3-2x-5=0$ (the only equation Newton ever bothered to solve with his method, in 1671!)
 
-Set $\text{TOL} = 10^{-12}$, and find the real root of the ***************Newton’s cubic***************, $x^3-2x-5=0$ (the only equation Newton ever bothered to solve with his method, in 1671!)
-
-### Part (b)
+### 2.2.2. Part (b)
 
 In a building, two intersecting halls with widths $w_1=9$ and $w_2=7$ feet at the angle $\alpha = 125\deg$, as shown below:
 
@@ -41,9 +108,9 @@ In a building, two intersecting halls with widths $w_1=9$ and $w_2=7$ feet at th
 
 Assuming a two-dimensional situation (i.e., ignoring the thickness of the board), what is the longest board that can negotiate the turn? $[$**Hints**: Express length of the board $l = l_1 + l_2$ in terms of the angle $\gamma$, then find the maximum of the function $l(\gamma)$ by solving the nonlinear equation $l'(\gamma) = 0$$]$.
 
-### Part (c)
+### 2.2.3. Part (c)
 
-Commissioner Gordon has been found dead in his office. At 8:00 PM, the county coroner determined the core temperature of the corpse to be $90\degree\text{F}$   F. One hour later, the core temperature had dropped to $85\degree\text{F}$. Maintenance reported that the building’s air conditioning unit broke down at 4:00 PM. The temperature in the commissioner’s office was $68\degree\text{F}$ at that time.
+Commissioner Gordon has been found dead in his office. At 8:00 PM, the county coroner determined the core temperature of the corpse to be $90\degree\text{F}$. One hour later, the core temperature had dropped to $85\degree\text{F}$. Maintenance reported that the building’s air conditioning unit broke down at 4:00 PM. The temperature in the commissioner’s office was $68\degree\text{F}$ at that time.
 
 The computerized climate control system recorded that the office temperature rose at a rate of $1\degree\text{F}$ per hour after the air conditioning stopped working. Captain Furillo believes that the infamous Doc B killed the commissioner. Doc B, however, claims that he has an alibi.
 
@@ -54,7 +121,7 @@ The receptionist at the *Daily Planet Building* checked Doc B into the building 
 > ***Could Doc B have killed the commissioner?***
 >
 
-### Hints
+### 2.2.4. Hints
 
 Assume that the core temperature of the corpse was $98.6\degree\text{F}$ at the time of death and began
 decreasing immediately obeying Newton’s Law of Cooling. Let $T(t)$ be the temperature $(\degree\text{F})$ of the corpse at time $t$ (in hours).
@@ -78,13 +145,19 @@ $$
 Now, to answer the question, you will need to determine the exact time of death. Meaning find $t$ such that $T(t)=98.6\degree\text{F}$.
 
 
-## Project Checklist
+# 3. Project Checklist
 
 - [x]  Create `main.py` and `helpers.py`
 - [x]  Write (simple) function for Newton’s cubic (called `newtons_cubic()`)
-- [ ]  Create configuration dictionary `CONFIG` for this project
-- [ ]  Write a function `newton_raphson()`
-- [ ]  Implement Newton's method for finding a root of a given function using
-- [ ]  Set `TOL = 10^-12` and find the real root of Newton's cubic, $x^3 - 2x - 5 = 0$
+- [x]  Create configuration dictionary `CONFIG` for this project
+- [x]  Write a function `newton_raphson()`
+- [x]  Implement Newton's method for finding a root of a given function using
+- [x]  Set `TOL = 10^-12` and find the real root of Newton's cubic, $x^3 - 2x - 5 = 0$
 - [ ]  Determine the longest board that can negotiate the turn in a building with intersecting halls
 - [ ]  Determine if Doc B could have killed Commissioner Gordon based on temperature data and alibi
+
+---
+
+- [x] Part (a)
+- [ ] Part (b)
+- [ ] Part (c)
