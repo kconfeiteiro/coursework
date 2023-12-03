@@ -1,3 +1,4 @@
+import os
 from typing import Callable, Dict, NamedTuple, Tuple
 
 import matplotlib.pyplot as plt
@@ -5,18 +6,32 @@ import numpy as np
 
 
 def newton_raphson(
-    guess=None, function=None, first_deriv=None, tolerance=None, prints=False
+    guess=None,
+    function=None,
+    first_deriv=None,
+    tolerance=None,
+    prints=False,
+    recursion_limit=None,
 ):
-    h = function(guess) / first_deriv(guess)
-    count = 0
+    h, count = function(guess) / first_deriv(guess), 0
     while abs(h) >= tolerance:
         h = function(guess) / first_deriv(guess)
         guess -= h
 
         if prints:
-            print("{}. F(x_n) = {}; x_n = {}".format(count, round(function(guess), 4), round(guess, 4)))
+            print(
+                "{}. F(x_n) = {:>22};\t\t x_n = {:>12}".format(
+                    count, round(function(guess), 4), round(guess, 4)
+                )
+            )
+
+        if count and (count == recursion_limit):
+            break
 
         count += 1
+
+    if prints:
+        print(f"\nFinal estimated answer (in {count} tries): {guess}")
 
     return guess
 
@@ -30,21 +45,25 @@ def set_plot_range(function, setrange=(-10, 10, 100)):
 def plot_function(
     *items,
     plt_cfg={"nrows": 1, "ncols": 1},
-    xrange=(-10, 10, 100),
+    setxrange=(-10, 10, 100),
     estimated_value=None,
     figtitle=None,
     xlabel=None,
     ylabel=None,
+    xlim=None,
+    ylim=None,
+    tight_layout=False,
     est_height=None,
     grid=True,
     save_as=None,
     setlabels=True,
-    display=True
+    display=True,
+    return_figure=False,
 ):
     fig, axes = plt.subplots(**plt_cfg)
 
     for func, label in items:
-        axes.plot(*set_plot_range(func, setrange=xrange), label=label)
+        axes.plot(*set_plot_range(func, setrange=setxrange), label=label)
 
     if grid:
         axes.grid()
@@ -66,11 +85,46 @@ def plot_function(
     if ylabel:
         axes.set_ylabel(ylabel)
 
-    if save_as:
-        fig.savefig(save_as)
+    if xlim:
+        axes.set_xlim(*xlim)
+
+    if ylim:
+        axes.set_ylim(*ylim)
+
+    if tight_layout:
+        fig.tight_layout()
 
     if setlabels:
         axes.legend()
 
+    if save_as:
+        path, _ = os.path.split(save_as)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        fig.savefig(save_as)
+
     if display:
         plt.show()
+
+    if return_figure:
+        return fig, axes
+
+
+def uniquefilename(
+    filename,
+    savepath=None,
+    return_count=False,
+):
+    base_name, ext = os.path.splitext(filename)
+    unique_name, counter = filename, 1
+    while os.path.exists(os.path.join(savepath, unique_name)):
+        counter += 1
+        unique_name = f"{base_name}({counter}){ext}"
+
+    new_name = os.path.join(savepath, unique_name)
+
+    if return_count:
+        return new_name, counter
+    else:
+        return new_name
