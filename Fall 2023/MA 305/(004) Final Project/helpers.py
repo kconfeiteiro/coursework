@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-
 def newton_raphson(
     guess=None,
     function=None,
@@ -18,7 +17,7 @@ def newton_raphson(
         try:
             h = function(guess) / dfunction(guess)
         except ZeroDivisionError:
-            h = function(guess) / 1e-5
+            h = function(guess) / 1e-10
 
         guess -= h
 

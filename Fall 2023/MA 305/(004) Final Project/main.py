@@ -1,20 +1,21 @@
-from math import e, tan, degrees
+import os
+from math import degrees, e, tan
+from time import time
 
 from mpmath import cot, csc, sec
 
 from helpers import newton_raphson, plot_function, uniquefilename
 
-# configurations for project
 CONFIG = {
     "part a": {
         "x-vals range": (-10, 10, 100),
         "plot config": {
             "figtitle": r"$f(x)$ & $f'(x)$",
-            "xlabel": r"$y$",
-            "ylabel": r"$x$",
+            "xlabel": r"$x$",
+            "ylabel": r"$y$",
             "est_height": 950,
             "display": False,
-            # "save_as": uniquefilename("part_a_attempt.jpg", "PLOTS\\part a"),
+            "save_as": uniquefilename("part_a_attempt.jpg", os.getcwd()),
             "tight_layout": True,
             "grid": True,
         },
@@ -31,7 +32,7 @@ CONFIG = {
             "xlabel": r"$\gamma$",
             "ylabel": r"$l(\gamma)$",
             "display": False,
-            # "save_as": uniquefilename("part_b_attempt.jpg", "PLOTS\\part b"),
+            "save_as": uniquefilename("part_b_attempt.jpg", os.getcwd()),
             "tight_layout": True,
             "grid": True,
         },
@@ -48,7 +49,7 @@ CONFIG = {
             "xlabel": r"Time $(t)$",
             "ylabel": r"$T(t)$",
             "tight_layout": True,
-            # "save_as": uniquefilename("part_c_attempt.jpg", "PLOTS\\part c"),
+            "save_as": uniquefilename("part_c_attempt.jpg", os.getcwd()),
             "grid": True,
             "display": False,
         },
@@ -59,6 +60,9 @@ CONFIG = {
         },
     },
 }
+
+# start time
+START = time()
 
 # define functions for Newton's Cubic and first derivative
 cubic = lambda x: x**3 - 2 * x - 5
@@ -125,3 +129,6 @@ plot_function(
     (dtemp, r"$T'(t)=1-12e^{-t}$"),
     **CONFIG["part c"]["plot config"],
 )
+
+
+print("\n\n------- Code executed in {} seconds".format(abs(START - time())))
