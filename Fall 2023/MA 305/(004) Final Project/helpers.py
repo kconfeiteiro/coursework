@@ -1,21 +1,25 @@
 import os
-from typing import Callable, Dict, NamedTuple, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
+
 def newton_raphson(
     guess=None,
     function=None,
-    first_deriv=None,
+    dfunction=None,
     tolerance=None,
     prints=False,
     recursion_limit=None,
 ):
-    h, count = function(guess) / first_deriv(guess), 0
+    h, count = function(guess) / dfunction(guess), 0
     while abs(h) >= tolerance:
-        h = function(guess) / first_deriv(guess)
+        try:
+            h = function(guess) / dfunction(guess)
+        except ZeroDivisionError:
+            h = function(guess) / 1e-5
+
         guess -= h
 
         if prints:
@@ -30,6 +34,7 @@ def newton_raphson(
 
         count += 1
 
+    guess = float(guess)
     if prints:
         print(f"\nFinal estimated answer (in {count} tries): {guess}")
 

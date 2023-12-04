@@ -1,4 +1,6 @@
-from math import e
+from math import e, tan, degrees
+
+from mpmath import cot, csc, sec
 
 from helpers import newton_raphson, plot_function, uniquefilename
 
@@ -12,7 +14,24 @@ CONFIG = {
             "ylabel": r"$x$",
             "est_height": 950,
             "display": False,
-            "save_as": uniquefilename("part_a_attempt.jpg", "PLOTS\\part a"),
+            # "save_as": uniquefilename("part_a_attempt.jpg", "PLOTS\\part a"),
+            "tight_layout": True,
+            "grid": True,
+        },
+        "newton-raphson cfg": {
+            "tolerance": 1e-12,
+            "recursion_limit": None,
+            "prints": False,
+        },
+    },
+    "part b": {
+        "x-vals range": (-10, 10, 100),
+        "plot config": {
+            "figtitle": "Finding Maximum Length",
+            "xlabel": r"$\gamma$",
+            "ylabel": r"$l(\gamma)$",
+            "display": False,
+            # "save_as": uniquefilename("part_b_attempt.jpg", "PLOTS\\part b"),
             "tight_layout": True,
             "grid": True,
         },
@@ -29,7 +48,7 @@ CONFIG = {
             "xlabel": r"Time $(t)$",
             "ylabel": r"$T(t)$",
             "tight_layout": True,
-            "save_as": uniquefilename("part_c_attempt.jpg", "PLOTS\\part c"),
+            # "save_as": uniquefilename("part_c_attempt.jpg", "PLOTS\\part c"),
             "grid": True,
             "display": False,
         },
@@ -42,36 +61,67 @@ CONFIG = {
 }
 
 # define functions for Newton's Cubic and first derivative
-ncubic = lambda x: x**3 - 2 * x - 5
-ncubic_prime = lambda x: 3 * x**2 - 2
+cubic = lambda x: x**3 - 2 * x - 5
+dcubic = lambda x: 3 * x**2 - 2
 
 # use Newton's method to determine zero(es) of f(x) (part a)
-guess1 = newton_raphson(
+est_ncubic_zero = newton_raphson(
     guess=0,
-    function=ncubic,
-    first_deriv=ncubic_prime,
+    function=cubic,
+    dfunction=dcubic,
     **CONFIG["part a"]["newton-raphson cfg"],
 )
 
+print("\n{0} Part (a) {0}".format("=" * 20))
+print(f"Estimated zero for Newton's cubic: {est_ncubic_zero}")
+
 plot_function(
-    (ncubic, r"$f(x)=x^3-2x-5$"),
-    (ncubic_prime, r"$f'(x)=3x^2-2$"),
-    estimated_value=guess1,
+    (cubic, r"$f(x)=x^3-2x-5$"),
+    (dcubic, r"$f'(x)=3x^2-2$"),
+    estimated_value=est_ncubic_zero,
     **CONFIG["part a"]["plot config"],
 )
 
+# set up for part b (ladder in hallway)
+w1, w2 = 9, 7
+length = lambda ang: (w1 * csc(ang)) + (w2 * sec(ang))
+dlength = lambda ang: (w2 * sec(ang) * tan(degrees(ang))) + (w1 * csc(ang) * cot(ang))
+
+est_angle = newton_raphson(
+    guess=12,
+    function=length,
+    dfunction=dlength,
+    **CONFIG["part b"]["newton-raphson cfg"],
+)
+
+est_angle = degrees(est_angle)
+
+print("\n{0} Part (b) {0}".format("=" * 20))
+print(f"Maximum angle found: {est_angle} deg")
+print(f"Maximum length determined l({est_angle} deg): {abs(length(est_angle))} ft")
+
+plot_function(
+    (length, r"$l(\gamma)$"),
+    (dlength, r"$l'(\gamma)$"),
+    **CONFIG["part b"]["plot config"],
+)
+
 # set up for part c
-tempfunc = lambda x: x + 72 + 12 * (e ** (-x))
-tempfunc_prime = lambda x: 1 - 12 * (e ** (-x))
-guess2 = newton_raphson(
+temp = lambda t: 68 + 22 * (e ** (-t))
+dtemp = lambda t: -22 * (e ** (-t))
+est_time = newton_raphson(
     guess=89.5,
-    function=tempfunc,
-    first_deriv=tempfunc_prime,
+    function=temp,
+    dfunction=dtemp,
     **CONFIG["part c"]["newton-raphson cfg"],
 )
 
+print("\n{0} Part (c) {0}".format("=" * 20))
+print(f"Estimated time of death: {est_time}")
+print(f"Tempeature at time of death: {temp(est_time)} deg F")
+
 plot_function(
-    (tempfunc, r"$T(t)=t+72+12e^{-t}$"),
-    (tempfunc_prime, r"$T'(t)=1-12e^{-t}$"),
+    (temp, r"$T(t)=t+72+12e^{-t}$"),
+    (dtemp, r"$T'(t)=1-12e^{-t}$"),
     **CONFIG["part c"]["plot config"],
 )
