@@ -15,7 +15,7 @@
 The main object of this project is to pick a project from the [list of projects](https://drive.google.com/file/d/1uu50InrSzw6umkXOIvHz8SUAgQlYyXd0/view?usp=drive_link) and solve the problems (of that project) accordingly.
 
 For this project, my partner [Antonio Cascio](https://www.linkedin.com/in/antonio-cascio
-) and I have chose ***Project II: Root Finding using Newton’s Method***. Our project will be outlined in this `README.md` file.
+) and I have chosen ***Project II: Root Finding using Newton’s Method***. Our project will be outlined in this `README.md` file.
 
 ## 2.1. Initial Outline
 
@@ -28,7 +28,7 @@ f'(x) &= 3x^2-2.
 \end{align}
 $$
 
-Using formulas listed below, we have:
+Using the formulas listed below, we have:
 
 $$
 \begin{align}
@@ -39,11 +39,9 @@ $$
 
 ### 2.1.1. Additional Notes
 
-*The Newton's method* is an iterative numerical technique used to find the roots of a real-valued function. To find the zeros of a cubic equation using *Newton's method*, you would start with an initial guess and iteratively refine it.
+*The Newton-Raphson method* is an iterative numerical technique used to find the roots of a real-valued function. To find the zeros of a cubic equation using the *Newton-Raphson method*, you would start with an initial guess and iteratively refine it.
 
 The general form of a cubic equation is,
-
-
 
 $$
 \begin{equation}
@@ -84,7 +82,7 @@ n = 0,\space 1,\space 2,\space 3, \dots,\space N.
 \end{gather}
 $$
 
-Where a good way to decide convergence is to test both the relative change and the residual;
+A good way to decide convergence is to test both the relative change and the residual;
 
 $$
 \begin{gather}
@@ -106,7 +104,7 @@ In a building, two intersecting halls with widths $w_1=9$ and $w_2=7$ feet at th
 
 ![Alt text](<src/project 2 figure.png>)
 
-Assuming a two-dimensional situation (i.e., ignoring the thickness of the board), what is the longest board that can negotiate the turn? $[$**Hints**: Express length of the board $l = l_1 + l_2$ in terms of the angle $\gamma$, then find the maximum of the function $l(\gamma)$ by solving the nonlinear equation $l'(\gamma) = 0$$]$.
+Assuming a two-dimensional situation (i.e., ignoring the thickness of the board), what is the longest board that can negotiate the turn? $[$**Hints**: Express length of the board $l = l_1 + l_2$ in terms of the angle $\gamma$, then find the maximum of the function $l(\gamma)$ by solving the nonlinear equation $l'(\gamma) = 0$].
 
 ### 2.2.3. Part (c)
 
