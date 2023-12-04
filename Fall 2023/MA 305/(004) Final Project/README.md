@@ -68,7 +68,7 @@ Where:
 - $f(x)$ is the value of the function at $x_n$
 - $f'(x_n)$ is the derivative of the function with respect to $x$ at $x_n$
 
-For a cubic equation, the process involves applying this formula until you converge to a root. The choice of the initial guess is crucial for the convergence of the method.
+The process involves applying this formula for a cubic equation until you converge to a root. The choice of the initial guess is crucial for the convergence of the method.
 
 
 ## 2.2. Project II: Root Finding using Newton’s Method
@@ -84,7 +84,7 @@ n = 0,\space 1,\space 2,\space 3, \dots,\space N.
 \end{gather}
 $$
 
-Where, a good way to decide convergence is to test both the relative change and the residual;
+Where a good way to decide convergence is to test both the relative change and the residual;
 
 $$
 \begin{gather}
@@ -94,9 +94,9 @@ $$
 
 The main program should read in initial guess for the root $x_0$, and tolerance for testing convergence (these could also be set in the code, if you prefer).
 
-Your program should output the input values ($x_0$ and $\epsilon$) at the beginning, then at each iteration print out: $n$, $x_n$, and $F(x_n)$.
+Your program should output the input values ($x_0$ and $\epsilon$) at the beginning, then print out each iteration: $n$, $x_n$, and $F(x_n)$.
 
-Then, upon convergence, the number of iterations $n$, the root $x_n$ and the residual $|F(x_n)|$. The values of $F(x_n)$ and $F_0(x_n)$ may be computed in a function or two separate functions.
+Then, upon convergence, the number of iterations $n$, the root $x_n$, and the residual $|F(x_n)|$. The values of $F(x_n)$ and $F_0(x_n)$ may be computed in a function or two separate functions.
 
 Set $\text{TOL} = 10^{-12}$, and find the real root of the ***************Newton’s cubic***************, $f(x) = x^3-2x-5=0$ (the only equation Newton ever bothered to solve with his method, in 1671!)
 
@@ -153,11 +153,11 @@ Now, to answer the question, you will need to determine the exact time of death.
 - [x]  Write a function `newton_raphson()`
 - [x]  Implement Newton's method for finding a root of a given function using
 - [x]  Set `TOL = 10^-12` and find the real root of Newton's cubic, $x^3 - 2x - 5 = 0$
-- [ ]  Determine the longest board that can negotiate the turn in a building with intersecting halls
-- [ ]  Determine if Doc B could have killed Commissioner Gordon based on temperature data and alibi
+- [x]  Determine the longest board that can negotiate the turn in a building with intersecting halls
+- [x]  Determine if Doc B could have killed Commissioner Gordon based on temperature data and alibi
 
 ---
 
 - [x] Part (a)
-- [ ] Part (b)
-- [ ] Part (c)
+- [x] Part (b)
+- [x] Part (c)
