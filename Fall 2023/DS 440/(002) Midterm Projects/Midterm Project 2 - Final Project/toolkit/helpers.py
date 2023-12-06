@@ -104,7 +104,7 @@ def correlation_plot(
         plt.show()
 
 
-def regression_tree_viz(
+def tree_viz(
     model: Callable = ...,
     filled: bool = True,
     feature_names: Sequence[str] = ...,

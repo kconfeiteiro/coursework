@@ -5,11 +5,13 @@ DS 440 - 01DB
 Final Project
 Created: 11/18/2023
 Due: 12/13/2023
-Last Edited: 12/05/2023
+Last Edited: 12/06/2023
 """
 
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+from sklearn.tree import plot_tree
 
 import toolkit.helpers as hp
 from toolkit.evaluations import TSNEeval
@@ -29,8 +31,8 @@ CONFIG = {
         "Student group",
         "Category",
         "2021-2022 student count - year to date",
-        "2020-2021 student count",
-        "2019-2020 student count",
+        # "2020-2021 student count",
+        # "2019-2020 student count",
     ],
     "prediction options": {
         "A": "2021-2022 attendance rate - year to date",
@@ -40,10 +42,10 @@ CONFIG = {
 }
 
 # read and save correlation plots for data visuzliation
-DATA = pd.read_csv(CONFIG["paths"]["data"])
-features = DATA[CONFIG["features"]]
-to_predict = DATA[CONFIG["prediction options"]["A"]]
-to_predict_2 = DATA[CONFIG["prediction options"]["B"]]
+dframe = pd.read_csv(CONFIG["paths"]["data"])
+features = dframe[CONFIG["features"]]
+to_predict = dframe[CONFIG["prediction options"]["A"]]
+to_predict_2 = dframe[CONFIG["prediction options"]["B"]]
 
 # replace all alphanumerical values
 features = features.replace(
@@ -59,31 +61,38 @@ features = features.astype(np.float64)
 to_predict = to_predict.apply(lambda x: x.strip("%"))
 to_predict = to_predict.astype(np.float64)
 
-SDATA = hp.prepare_data(X=features, y=to_predict, test_size=CONFIG["test size"])
+data = hp.prepare_data(X=features, y=to_predict, test_size=CONFIG["test size"])
 
 # decision tree regressor
-DTR = dtregressor(xtrain=SDATA.X_train, ytrain=SDATA.y_train, **CONFIG["decision tree"])
-y_pred_train_DTR = DTR.predict(SDATA.X_train)
-y_pred_test_DTR = DTR.predict(SDATA.X_test)
+DTR = dtregressor(xtrain=data.X_train, ytrain=data.y_train, **CONFIG["decision tree"])
+y_pred_train_DTR = DTR.predict(data.X_train)
+y_pred_test_DTR = DTR.predict(data.X_test)
 
 # DTR visualiztion
-hp.regression_tree_viz(
-    model=DTR,
-    feature_names=CONFIG["features"],
-    figtitle="Decision Tree Visualization",
-)
+# hp.tree_viz(
+#     model=DTR,
+#     feature_names=CONFIG["features"],
+#     figtitle="Decision Tree Visualization",
+#     display=False,
+# )
 
-RFR = rfregressor(xtrain=SDATA.X_train, ytrain=SDATA.y_train, **CONFIG["random forest"])
-y_pred_train_RFR = RFR.predict(SDATA.X_train)
-y_pred_test_RFR = RFR.predict(SDATA.X_test)
+RFR = rfregressor(xtrain=data.X_train, ytrain=data.y_train, **CONFIG["random forest"])
+y_pred_train_RFR = RFR.predict(data.X_train)
+y_pred_test_RFR = RFR.predict(data.X_test)
 
-print("Test R^2 value (DTR): ", DTR.score(SDATA.X_test, y_pred_test_DTR))
-print("Train R^2 value (DTR): ", DTR.score(SDATA.X_train, y_pred_train_DTR))
-print("Test R^2 value (RFR): ", RFR.score(SDATA.X_test, y_pred_test_RFR))
-print("Train R^2 value (RFR): ", RFR.score(SDATA.X_train, y_pred_train_RFR))
+fig, axe = plt.subplots()  # figsize=(48, 16))
+plot_tree(
+    RFR.estimators_[0], ax=axe
+)  # , feature_names=features, fontsize=8, filled=True, rounded=True)
+fig.savefig("random_forest_viz.jpg")
 
-X_test, X_train = SDATA.X_test, SDATA.X_train
-y_test, y_train = SDATA.y_test, SDATA.y_train
+print("Test R^2 value (DTR): ", DTR.score(data.X_test, y_pred_test_DTR))
+print("Train R^2 value (DTR): ", DTR.score(data.X_train, y_pred_train_DTR))
+print("Test R^2 value (RFR): ", RFR.score(data.X_test, y_pred_test_RFR))
+print("Train R^2 value (RFR): ", RFR.score(data.X_train, y_pred_train_RFR))
+
+X_test, X_train = data.X_test, data.X_train
+y_test, y_train = data.y_test, data.y_train
 
 # t-sne configurations
 TSNE_CFG = {
