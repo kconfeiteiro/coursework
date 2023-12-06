@@ -1,8 +1,12 @@
 import re
-from typing import List, Literal, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Literal, Sequence, Tuple
 
+import dtreeviz
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 from sklearn.model_selection import train_test_split
+from sklearn.tree import plot_tree
 
 from toolkit import SplitData
 
@@ -42,6 +46,19 @@ def separate(
 
 
 def replacements(data):
+    """
+    Creates a dictionary of keys with enumerated values (for replacement for ML models).
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Data in a Pandas DataFrame object
+
+    Returns
+    -------
+    Dict[str, int]
+        Dictionary of all the keys and integer values.
+    """
     return {f"{key}": i for i, key in enumerate(data)}
 
 
@@ -71,3 +88,46 @@ def to_txt(
 
 def strmatch(pattern, string):
     return bool(re.search(pattern, string))
+
+
+def correlation_plot(
+    data: pd.DataFrame = ..., save_as: str = None, display: bool = False
+):
+    corr_mat = data.corr()
+    corr_heatmap = sns.heatmap(corr_mat, annot=True)
+    figure = corr_heatmap.get_figure()
+
+    if save_as:
+        figure.savefig(save_as)
+
+    if display:
+        plt.show()
+
+
+def regression_tree_viz(
+    model: Callable = ...,
+    filled: bool = True,
+    feature_names: Sequence[str] = ...,
+    fontsize: int = 10,
+    save_as: str = None,
+    tight_layout: bool = True,
+    figtitle: str = None,
+    plt_cfg: Dict = dict(figsize=(48, 16)),
+    display: bool = False,
+):
+    fig, axes = plt.subplots(**plt_cfg)
+    plot_tree(
+        model, filled=filled, feature_names=feature_names, ax=axes, fontsize=fontsize
+    )
+
+    if figtitle:
+        axes.set_title(figtitle)
+
+    if tight_layout:
+        fig.tight_layout()
+
+    if save_as:
+        fig.savefig(save_as)
+
+    if display:
+        plt.show()

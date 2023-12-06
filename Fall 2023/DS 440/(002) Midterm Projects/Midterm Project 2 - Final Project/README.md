@@ -7,33 +7,35 @@
 - Importance and relevance of the chosen problem in the context of data mining
 
 ### 2. Methodology
-- 2.1 Dataset and Initial Statistics
-  - **2.1.1 Statistical Summary**
-      - Summary statistics of the dataset (mean, median, standard deviation, etc.)
-      - Identify key features and their distributions
-  - **2.1.2 Initial Data Visualization**
-      - Visual representation of data through charts, graphs, and plots
-      - Preliminary insights gained from initial visualization
-      - 2.2 Technical Approaches
-  - **2.2.1 Supervised Learning Approach (at least two approaches)**
-      - Description of the selected supervised learning algorithms
-      - Training and testing procedures
-      - Parameter tuning and optimization
-  - **2.2.2 Unsupervised Learning Approach (at least two approaches)**
-      - Explanation of chosen unsupervised learning algorithms
-      - Clustering or dimensionality reduction techniques employed
-      - Any preprocessing steps taken before applying the algorithms
+2.1 Dataset and Initial Statistics
+- **2.1.1 Statistical Summary**
+    - Summary statistics of the dataset (mean, median, standard deviation, etc.)
+    - Identify key features and their distributions
+- **2.1.2 Initial Data Visualization**
+    - Visual representation of data through charts, graphs, and plots
+    - Preliminary insights gained from initial visualization
+    - 2.2 Technical Approaches
+- **2.2.1 Supervised Learning Approach (at least two approaches)**
+    - Description of the selected supervised learning algorithms
+    - Training and testing procedures
+    - Parameter tuning and optimization
+- **2.2.2 Unsupervised Learning Approach (at least two approaches)**
+    - Explanation of chosen unsupervised learning algorithms
+    - Clustering or dimensionality reduction techniques employed
+    - Any preprocessing steps taken before applying the algorithms
 
 
 ### 3. Evaluation & Discussion
-  - **3.1 Comparison of Supervised Learning Methods**
-      - Evaluation metrics used (accuracy, precision, recall, F1-score, etc.)
-      - Comparative analysis of results from different supervised learning approaches
-      - Discussion on the strengths and weaknesses of each approach
-  - **3.2 Comparison of Unsupervised Learning Methods**
-      - Evaluation criteria specific to unsupervised learning (silhouette score, inertia, etc.)
-      - Comparative analysis of results from different unsupervised learning approaches
-      - Insightful discussion on the appropriateness of each approach for the given problem
+
+**3.1 Comparison of Supervised Learning Methods**
+- Evaluation metrics used (accuracy, precision, recall, F1-score, etc.)
+- Comparative analysis of results from different supervised learning approaches
+- Discussion on the strengths and weaknesses of each approach
+
+**3.2 Comparison of Unsupervised Learning Methods**
+- Evaluation criteria specific to unsupervised learning (silhouette score, inertia, etc.)
+- Comparative analysis of results from different unsupervised learning approaches
+- Insightful discussion on the appropriateness of each approach for the given problem
 
 ### 4. Conclusion
 - Summary of key findings and insights from the project
@@ -102,23 +104,20 @@ Attendance rates are provided for each student group by district and for the sta
 When no attendance data is displayed in a cell, data have been suppressed to safeguard student confidentiality, or to ensure that statistics based on a minimal sample size are not interpreted as equally representative as those based on a sufficiently larger sample size, for [more information on CSDE data suppression policies](http://edsight.ct.gov/relatedreports/BDCRE%20Data%20Suppression%20Rules.pdf).
 
 
-# Sources
-## Sci-Kit Learn
+## Sources
+### Sci-Kit Learn
 
 - [1. Supervised learning — scikit-learn 1.3.2 documentation](https://scikit-learn.org/stable/supervised_learning.html)
 - [1.4. Support Vector Machines — scikit-learn 1.3.2 documentation](https://scikit-learn.org/stable/modules/svm.html#regression)
 - [1.10. Decision Trees — scikit-learn 1.3.2 documentation](https://scikit-learn.org/stable/modules/tree.html)
-
-### Regression Models
-
 - [sklearn.ensemble.RandomForestRegressor — scikit-learn 1.3.2 documentation](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)
 - [1.10. Decision Trees — scikit-learn 1.3.2 documentation](https://scikit-learn.org/stable/modules/tree.html#regression)
     - [Decision Tree Regression — scikit-learn 1.3.2 documentation](https://scikit-learn.org/stable/auto_examples/tree/plot_tree_regression.html#sphx-glr-auto-examples-tree-plot-tree-regression-py)
 
-## Pandas
+### Pandas
 
 - [pandas.DataFrame.replace — pandas 2.1.3 documentation (pydata.org)](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.replace.html)
 
-## Matplotlib
+### Matplotlib
 
 - [Top 50 matplotlib Visualizations - The Master Plots (w/ Full Python Code) | ML+ (machinelearningplus.com)](https://www.machinelearningplus.com/plots/top-50-matplotlib-visualizations-the-master-plots-python/)

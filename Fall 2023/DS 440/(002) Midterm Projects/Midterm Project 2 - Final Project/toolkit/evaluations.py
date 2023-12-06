@@ -89,6 +89,21 @@ class EvaluateModel:
         average: Literal["micro", "macro", "weighted", "binary"] | None = None,
         zero_division: Literal["warn"] | np.nan = np.nan,
     ) -> Evaluations:
+        """
+        Method to evaluate the model.
+
+        Parameters
+        ----------
+        average : Literal, optional
+            What you want to scale the averages with, by default None
+        zero_division : Literal, optional
+            What you want to do with the `ZeroDivisionError`, by default np.nan
+
+        Returns
+        -------
+        Evaluations
+            A `NamedTuple` object of all the model's evaluations.
+        """
         roc_vals = lambda y_true, y_pred, pos_label=1: roc_curve(
             y_true, y_pred, pos_label=pos_label
         )
@@ -118,6 +133,16 @@ class EvaluateModel:
         self._evals_tuple = Evaluations(*self._evals.values(), dictionary=self._evals)
 
     def cofusion_matrix_eval(self, classes: Sequence[int] = None, save_as: str = None):
+        """
+        Creates (and saves) a confusion matrix plot.
+
+        Parameters
+        ----------
+        classes : Sequence[int], optional
+            The classes of the model you are evaluating, by default None
+        save_as : str, optional
+            What you want to save the confusion matrix by, by default None
+        """
         tn, fp, fn, tp = confusion_matrix(self.y_true, self.y_pred).ravel()
 
         with plt.ioff():
