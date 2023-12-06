@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-
 from helpers import list_dir, read_spectra, split, uniquefilename
 
+# project configurations
 CONFIG = {
-    "files": list_dir("DATA", reversed=True),
+    "files": list_dir("DATA"),
     "figure config": {
         "figsize": (7, 8),
     },
@@ -18,7 +18,24 @@ CONFIG = {
     },
     "title": "A Sequence of Stellar Flux Profiles",
     "save as": uniquefilename("spectral_atlas.jpg", "PLOTS")[0],
-    "spectral classes": [
+    "spectral atlas key": {
+        "File 1": "F2V",
+        "File 2": "G8V",
+        "File 3": "G2V",
+        "File 4": "M0V",
+        "File 5": "B3V",
+        "File 6": "O9V",
+        "File 7": "K5V",
+        "File 8": "F8V",
+        "File 9": "M6V",
+        "File 10": "B9V",
+        "File 11": "A0V",
+        "File 12": "O5V",
+        "File 13": "A5V",
+        "File 14": "WN",
+        "File 15": "L5",
+    },
+    "spectral classes annotations": [
         (6700, 8.75, "07.5V"),
         (6700, 7.75, "B5 V"),
         (6700, 6.50, "A2.5 V"),
@@ -87,39 +104,48 @@ CONFIG = {
     },
 }
 
-RDATA = read_spectra(
+# read spectral data
+spectral_data = read_spectra(
     *CONFIG["files"],
     normalize_col="Flux",
     **CONFIG["read kwargs"],
 )
 
-fig, axes = plt.subplots(**CONFIG["figure config"])
-for i, (data, smag) in enumerate(zip(RDATA, CONFIG["spectral classes"][::-1]), 1):
-    data["Flux"] = data["Flux"].apply(lambda x: x + i)
-    axes.plot(*split(data), label=smag)
-    i += 1
+for data in spectral_data:
+    print("max: ", data.describe().iloc[-1, -1])
 
-rectangle = Rectangle((3750, 0), 1250, 10, fc="lightblue", alpha=0.33)
+# create spectrum plot
+fig, axes = plt.subplots(**CONFIG["figure config"])
+for i, (data, spectype) in enumerate(
+    zip(spectral_data, CONFIG["spectral atlas key"].values())
+):
+    axes.plot(*split(data), label=spectype)
+    data["Flux"] = data["Flux"].apply(lambda x: x + i)
+
+# add blue shade to plot
 axes.set_xlim(*CONFIG["xrange"])
 axes.set_title(CONFIG["title"])
 axes.set_ylabel(r"Flux, $F$ ($W$) (w/ linear shift)")
 axes.set_xlabel(r"Wavelength, $\lambda$ ($\AA$)")
-axes.add_patch(rectangle)
+axes.add_patch(Rectangle((3750, 0), 1250, 10, fc="lightblue", alpha=0.33))
 
-for key in CONFIG["plot annotations"].keys():
-    axes.annotate(
-        **CONFIG["plot annotations"][key],
-        arrowprops={
-            "facecolor": "black",
-            "width": 0.75,
-            "headwidth": 6,
-        },
-    )
+# add annotations to plot
+# for key in CONFIG["plot annotations"].keys():
+#     axes.annotate(
+#         **CONFIG["plot annotations"][key],
+#         arrowprops={
+#             "facecolor": "black",
+#             "width": 0.75,
+#             "headwidth": 6,
+#         },
+#     )
 
-for sclass in CONFIG["spectral classes"]:
-    axes.text(*sclass)
+# add spectral class name annotations
+# for spectral_class in CONFIG["spectral classes annotations"]:
+#     axes.text(*spectral_class)
 
-
+# save figure
 fig.tight_layout()
-fig.savefig(CONFIG["save as"])
+axes.legend()
+# fig.savefig(CONFIG["save as"])
 plt.show()

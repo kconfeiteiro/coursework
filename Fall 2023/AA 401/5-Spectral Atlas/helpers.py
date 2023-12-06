@@ -4,22 +4,38 @@ import pandas as pd
 from natsort import natsorted
 
 
-def list_dir(rel_path, reversed=False):
+def list_dir(rel_path, reversed=False, return_dict=False, natsort=True):
     ABS = os.path.abspath(rel_path)
-    listed_paths = os.listdir(rel_path)
     prepend = lambda path: os.path.join(ABS, path)
+
+    listed_paths = os.listdir(rel_path)
     read_files = list(map(prepend, listed_paths))
-    return read_files[::-1] if reversed else read_files
+    if natsort:
+        read_files = natsorted(read_files)
+
+    if return_dict:
+        return {f"{i}": data for i, data in enumerate(read_files)}
+    else:
+        return read_files[::-1] if reversed else read_files
 
 
-def min_max_scaling(col):
-    return (col - col.min()) / (col.max() - col.min())
+def normalize(col, min_max_scaling=False):
+    if min_max_scaling:
+        return (col - col.min()) / (col.max() - col.min())
+    else:
+        return col / col.max()
 
 
-def read_spectra(*paths, sort_col=None, xrange=None, normalize_col=None, **kwargs):
+def read_spectra(
+    *paths,
+    sort_col=None,
+    xrange=None,
+    normalize_col=None,
+    min_max_scaling=False,
+    **kwargs,
+):
     data = [0] * len(paths)
     for i, path in enumerate(paths):
-        print("Reading path: ", path)
         temp = pd.read_csv(path, **kwargs)
 
         if xrange and sort_col:
@@ -28,14 +44,13 @@ def read_spectra(*paths, sort_col=None, xrange=None, normalize_col=None, **kwarg
             ]
 
         if normalize_col:
-            temp[normalize_col] = min_max_scaling(temp[normalize_col])
+            temp[normalize_col] = normalize(
+                temp[normalize_col], min_max_scaling=min_max_scaling
+            )
 
         data[i] = temp
 
-    if len(paths) == 1:
-        return data[0]
-    else:
-        return tuple(data)
+    return data[0] if len(paths) == 1 else tuple(data)
 
 
 def split(dataframe):
