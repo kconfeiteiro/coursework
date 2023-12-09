@@ -5,17 +5,21 @@ DS 440 - 01DB
 Final Project
 Created: 11/18/2023
 Due: 12/13/2023
-Last Edited: 12/06/2023
+Last Edited: 12/08/2023
 """
 
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
-from sklearn.tree import plot_tree
+from sklearn.metrics import adjusted_rand_score
 
 import toolkit.helpers as hp
 from toolkit.evaluations import TSNEeval
-from toolkit.models import dtregressor, rfregressor
+from toolkit.models import (
+    dtregressor,
+    rfregressor,
+    kmeansclassifier,
+    db_scan_classifier,
+)
 
 CONFIG = {
     "paths": {
@@ -45,7 +49,6 @@ CONFIG = {
 dframe = pd.read_csv(CONFIG["paths"]["data"])
 features = dframe[CONFIG["features"]]
 to_predict = dframe[CONFIG["prediction options"]["A"]]
-to_predict_2 = dframe[CONFIG["prediction options"]["B"]]
 
 # replace all alphanumerical values
 features = features.replace(
@@ -65,34 +68,46 @@ data = hp.prepare_data(X=features, y=to_predict, test_size=CONFIG["test size"])
 
 # decision tree regressor
 DTR = dtregressor(xtrain=data.X_train, ytrain=data.y_train, **CONFIG["decision tree"])
-y_pred_train_DTR = DTR.predict(data.X_train)
-y_pred_test_DTR = DTR.predict(data.X_test)
-
-# DTR visualiztion
-# hp.tree_viz(
-#     model=DTR,
-#     feature_names=CONFIG["features"],
-#     figtitle="Decision Tree Visualization",
-#     display=False,
-# )
+ypred_train_DTR = DTR.predict(data.X_train)
+ypred_test_DTR = DTR.predict(data.X_test)
 
 RFR = rfregressor(xtrain=data.X_train, ytrain=data.y_train, **CONFIG["random forest"])
-y_pred_train_RFR = RFR.predict(data.X_train)
-y_pred_test_RFR = RFR.predict(data.X_test)
+ypred_train_RFR = RFR.predict(data.X_train)
+ypred_test_RFR = RFR.predict(data.X_test)
 
-fig, axe = plt.subplots()  # figsize=(48, 16))
-plot_tree(
-    RFR.estimators_[0], ax=axe
-)  # , feature_names=features, fontsize=8, filled=True, rounded=True)
-fig.savefig("random_forest_viz.jpg")
-
-print("Test R^2 value (DTR): ", DTR.score(data.X_test, y_pred_test_DTR))
-print("Train R^2 value (DTR): ", DTR.score(data.X_train, y_pred_train_DTR))
-print("Test R^2 value (RFR): ", RFR.score(data.X_test, y_pred_test_RFR))
-print("Train R^2 value (RFR): ", RFR.score(data.X_train, y_pred_train_RFR))
-
+# split data into individuals
 X_test, X_train = data.X_test, data.X_train
 y_test, y_train = data.y_test, data.y_train
+
+# modifying data for classification models
+y_train_new = hp.regressor2classifier(data.y_train)
+y_test_new = hp.regressor2classifier(data.y_test)
+
+# k nearest regressory
+KMC = kmeansclassifier(X_train)
+ypred_test_KMC = KMC.predict(X_test)
+
+# (last model)
+dbscan, dbscan_labels = db_scan_classifier(X_train)
+ari_score = adjusted_rand_score(y_train_new, dbscan_labels)
+
+# print results
+print("\nDecision Tree Regressor")
+print("Test R^2 value (DTR): ", DTR.score(X_test, ypred_test_DTR))
+print("Train R^2 value (DTR): ", DTR.score(X_train, ypred_train_DTR))
+
+print("\nRandom Forset Regressor")
+print("Test R^2 value (RFR): ", RFR.score(X_test, ypred_test_RFR))
+print("Train R^2 value (RFR): ", RFR.score(X_train, ypred_train_RFR))
+
+print("\nK-Means Regressor")
+print("Test R^2 value (KMR): ", KMC.score(X_test, ypred_test_RFR))
+print("Train R^2 value (KMR): ", KMC.score(X_train, ypred_train_RFR))
+
+print("\nDBSCAN Classifier")
+print("Ari-Score: ", ari_score)
+
+exit()
 
 # t-sne configurations
 TSNE_CFG = {

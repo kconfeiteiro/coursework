@@ -5,6 +5,7 @@ import dtreeviz
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.model_selection import train_test_split
 from sklearn.tree import plot_tree
 
@@ -131,3 +132,17 @@ def tree_viz(
 
     if display:
         plt.show()
+
+
+def to_binary(value: float | int = ..., threshold: int | float = 70.0):
+    return 1 if value > threshold else 0
+
+
+def regressor2classifier(data: pd.DataFrame = ...):
+    if not isinstance(data, pd.DataFrame):
+        data = pd.DataFrame(data)
+
+    for col in data.columns:
+        data[col] = data[col].apply(to_binary)
+
+    return pd.Series(data[data.columns[0]])
