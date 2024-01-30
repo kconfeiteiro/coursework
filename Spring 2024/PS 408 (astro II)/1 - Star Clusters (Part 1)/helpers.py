@@ -50,3 +50,15 @@ def fix_data(*dataframes):
         returns.append(data)
 
     return tuple(returns)
+
+
+def plot_cmd(figsize, xlabel="Color", ylabel="Absolute Magnitude", title=None, save_as=None, **kwargs):
+    fig, axes = plt.subplots(figsize=figsize, **kwargs)
+    axes.set_xlabel(xlabel)
+    axes.set_ylabel(ylabel)
+    axes.set_title(title)
+
+    if save_as:
+        fig.savefig(save_as)
+
+

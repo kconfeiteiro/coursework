@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from utils import list_dir, read_data
+from helpers import list_dir, read_data
 
 
 CONFIG = {
