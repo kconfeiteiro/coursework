@@ -1,4 +1,4 @@
-from typing import Any, Dict, NamedTuple, Sequence
+from typing import Any, Dict, NamedTuple, Sequence, TypedDict
 
 
 class Evaluations(NamedTuple):
@@ -29,3 +29,12 @@ class SplitData(NamedTuple):
     y_test: Sequence[int | float] = None
     X: Sequence[int | float] = None
     y: Sequence[int | float] = None
+
+
+class DTROptimizierParams(TypedDict):
+    splitter: Sequence[str]
+    max_depth: Sequence[int]
+    min_samples_leaf: Sequence[int]
+    min_weight_fraction_leaf: Sequence[int]
+    max_features: Sequence[str]
+    max_leaf_nodes: Sequence[int | None]

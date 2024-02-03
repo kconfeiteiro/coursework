@@ -33,6 +33,7 @@ def kmeansclassifier(
     MODEL.fit(xtrain)
     return MODEL
 
+
 def db_scan_classifier(
     xtrain: Sequence[float | int] = ..., eps: int = 0.5, min_samples: int = 5, **kwargs
 ):

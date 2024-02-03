@@ -13,13 +13,14 @@ import pandas as pd
 from sklearn.metrics import adjusted_rand_score
 
 import toolkit.helpers as hp
-from toolkit.evaluations import TSNEeval
+from toolkit.evaluations import TSNEeval, kcrossfoldval
 from toolkit.models import (
     dtregressor,
     rfregressor,
     kmeansclassifier,
     db_scan_classifier,
 )
+from toolkit.optimizers import gridsearchvc_optimizer
 
 CONFIG = {
     "paths": {
@@ -30,6 +31,14 @@ CONFIG = {
     "test size": 0.2,
     "random forest": {"n_estimators": 100, "random_state": 1},
     "decision tree": {"max_depth": 5, "random_state": 1},
+    "DTR optimization params": {
+        "max_depth": 5,
+        "max_features": "auto",
+        "max_leaf_nodes": 40,
+        "min_samples_leaf": 2,
+        "min_weight_fraction_leaf": 0.1,
+        "splitter": "random",
+    },
     "features": [
         "District name",
         "Student group",
@@ -64,24 +73,56 @@ features = features.astype(np.float64)
 to_predict = to_predict.apply(lambda x: x.strip("%"))
 to_predict = to_predict.astype(np.float64)
 
-data = hp.prepare_data(X=features, y=to_predict, test_size=CONFIG["test size"])
+X_train, X_test, y_train, y_test = hp.prepare_data(
+    X=features,
+    y=to_predict,
+    test_size=CONFIG["test size"],
+    as_named_tuple=False,
+)
 
 # decision tree regressor
-DTR = dtregressor(xtrain=data.X_train, ytrain=data.y_train, **CONFIG["decision tree"])
-ypred_train_DTR = DTR.predict(data.X_train)
-ypred_test_DTR = DTR.predict(data.X_test)
+DTR = dtregressor(xtrain=X_train, ytrain=y_train, **CONFIG["decision tree"])
+ypred_train_dtr = DTR.predict(X_train)
+ypred_test_dtr = DTR.predict(X_test)
 
-RFR = rfregressor(xtrain=data.X_train, ytrain=data.y_train, **CONFIG["random forest"])
-ypred_train_RFR = RFR.predict(data.X_train)
-ypred_test_RFR = RFR.predict(data.X_test)
+print("\nDecision Tree Regressor")
+print("Test R^2 value (DTR): ", DTR.score(X_test, ypred_test_dtr))
+print("Train R^2 value (DTR): ", DTR.score(X_train, ypred_train_dtr))
 
-# split data into individuals
-X_test, X_train = data.X_test, data.X_train
-y_test, y_train = data.y_test, data.y_train
+tuned_dtr = gridsearchvc_optimizer(DTR, X_train, y_train)
+y_pred_train_dtr_tuned = tuned_dtr.predict(X_test)
+
+print(f"Tuned DTR R^2: ", tuned_dtr.score(X_test, y_pred_train_dtr_tuned))
+
+# k-fold cross-validation
+avg_cv_score_dtr = kcrossfoldval(optimal_model=tuned_dtr)
+print("Decision Tree Regressor avg cross-val score: ", avg_cv_score_dtr)
+
+RFR = rfregressor(xtrain=X_train, ytrain=y_train, **CONFIG["random forest"])
+ypred_train_rfr = RFR.predict(X_train)
+ypred_test_rfr = RFR.predict(X_test)
+
+print("\nRandom Forset Regressor")
+print("Test R^2 value (RFR): ", RFR.score(X_test, ypred_test_rfr))
+print("Train R^2 value (RFR): ", RFR.score(X_train, ypred_train_rfr))
+
+tuned_rfr = gridsearchvc_optimizer(
+    regressor=RFR,
+    cfg_params={
+        "n_estimators": [50, 100, 200],
+        "max_depth": [None, 10, 20, 30],
+        "min_samples_split": [2, 5, 10],
+        "min_samples_leaf": [1, 2, 4],
+    },
+)
+
+ypred_test_frf_tuned = tuned_rfr.predict(X_test)
+print("\nTuned FRF R^2: ", tuned_rfr.score(X_test, ypred_test_frf_tuned))
+
 
 # modifying data for classification models
-y_train_new = hp.regressor2classifier(data.y_train)
-y_test_new = hp.regressor2classifier(data.y_test)
+y_train_new = hp.regressor2classifier(y_train)
+y_test_new = hp.regressor2classifier(y_test)
 
 # k nearest regressory
 KMC = kmeansclassifier(X_train)
@@ -92,24 +133,15 @@ dbscan, dbscan_labels = db_scan_classifier(X_train)
 ari_score = adjusted_rand_score(y_train_new, dbscan_labels)
 
 # print results
-print("\nDecision Tree Regressor")
-print("Test R^2 value (DTR): ", DTR.score(X_test, ypred_test_DTR))
-print("Train R^2 value (DTR): ", DTR.score(X_train, ypred_train_DTR))
-
-print("\nRandom Forset Regressor")
-print("Test R^2 value (RFR): ", RFR.score(X_test, ypred_test_RFR))
-print("Train R^2 value (RFR): ", RFR.score(X_train, ypred_train_RFR))
-
 print("\nK-Means Regressor")
-print("Test R^2 value (KMR): ", KMC.score(X_test, ypred_test_RFR))
-print("Train R^2 value (KMR): ", KMC.score(X_train, ypred_train_RFR))
+print("Test R^2 value (KMR): ", KMC.score(X_test, ypred_test_rfr))
+print("Train R^2 value (KMR): ", KMC.score(X_train, ypred_train_rfr))
 
 print("\nDBSCAN Classifier")
 print("Ari-Score: ", ari_score)
 
 exit()
 
-# t-sne configurations
 TSNE_CFG = {
     "tsne": {
         "n_components": 2,

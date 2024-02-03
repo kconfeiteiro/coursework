@@ -1,9 +1,8 @@
-from typing import Any, Dict, Literal, Sequence
+from typing import Any, Callable, Dict, Literal, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from .helpers import strmatch, to_txt
 from sklearn.manifold import TSNE
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -19,8 +18,11 @@ from sklearn.metrics import (
     recall_score,
     roc_curve,
 )
+from sklearn.model_selection import KFold, cross_val_score
 
 from toolkit import Evaluations
+
+from .helpers import strmatch, to_txt
 
 
 class EvaluateModel:
@@ -314,3 +316,21 @@ class TSNEeval:
 
         if display:
             plt.show()
+
+
+def kcrossfoldval(
+    optimal_model: Callable = ...,
+    X_train: Sequence = ...,
+    y_train: Sequence = ...,
+    n_splits: int = 5,
+    shuffle: bool = True,
+    random_state: int = 42,
+    **kwargs,
+):
+    kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state, **kwargs)
+    cv_scores = cross_val_score(
+        optimal_model, X_train, y_train, cv=kf, scoring="neg_mean_squared_error"
+    )
+
+    avg_cv_score = np.mean(cv_scores)
+    return avg_cv_score

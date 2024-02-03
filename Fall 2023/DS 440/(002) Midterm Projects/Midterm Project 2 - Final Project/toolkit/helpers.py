@@ -13,13 +13,14 @@ from toolkit import SplitData
 
 
 def prepare_data(
-    X=None,
-    y=None,
-    xcols=None,
-    ycol=None,
+    X: Sequence[Any] = None,
+    y: Sequence[Any] = None,
+    xcols: Sequence[str] = None,
+    ycol: Sequence[str] = None,
     data=None,
-    test_size=0.2,
-    random_state=1,
+    test_size: float = 0.2,
+    random_state: int = 1,
+    as_named_tuple: bool = True,
     **kwargs,
 ):
     if all(val for val in [xcols, ycol, data]):
@@ -29,14 +30,17 @@ def prepare_data(
         X, y, test_size=test_size, random_state=random_state, **kwargs
     )
 
-    return SplitData(
-        X_train=X_train,
-        X_test=X_test,
-        y_train=y_train,
-        y_test=y_test,
-        X=X,
-        y=y,
-    )
+    if as_named_tuple:
+        return SplitData(
+            X_train=X_train,
+            X_test=X_test,
+            y_train=y_train,
+            y_test=y_test,
+            X=X,
+            y=y,
+        )
+    else:
+        return (X_train, X_test, y_train, y_test)
 
 
 def separate(
