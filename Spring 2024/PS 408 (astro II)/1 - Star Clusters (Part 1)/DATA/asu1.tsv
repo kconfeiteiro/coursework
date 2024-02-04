@@ -1,0 +1,63 @@
+#Table	J_A_A_537_A146_iso:
+#Name: J/A+A/537/A146/iso
+#Title: Isochrnones
+#Column	Rot	(A1)	[nr] r for rotation, n for no rotation	[ucd=meta.code]
+#Column	Mass	(F7.3)	Actual mass at the age of the isochrone	[ucd=phys.mass]
+#Column	iso	(A3)	Isochrone for this age	[ucd=meta.ref.url]
+#Column	Vmag	(F7.3)	V-band absolute magnitude	[ucd=phot.mag;em.opt.V]
+#Column	U-B	(F6.3)	U-B colour index	[ucd=phot.color;em.opt.U;em.opt.B]
+#Column	B-V	(F6.3)	B-V colour index	[ucd=phot.color;em.opt.B;em.opt.V]
+Rot	Mass	iso	Vmag	U-B	B-V
+ 	Msun	 	mag	mag	mag
+-	-------	---	-------	------	------
+n	  0.800	iso	  6.614	 0.489	 0.954
+n	  0.804	iso	  6.586	 0.482	 0.947
+n	  0.807	iso	  6.558	 0.475	 0.940
+n	  0.811	iso	  6.531	 0.468	 0.933
+n	  0.815	iso	  6.503	 0.461	 0.926
+n	  0.819	iso	  6.476	 0.454	 0.919
+n	  0.822	iso	  6.448	 0.447	 0.912
+n	  0.826	iso	  6.421	 0.440	 0.905
+n	  0.830	iso	  6.394	 0.433	 0.898
+n	  0.834	iso	  6.367	 0.426	 0.891
+n	  0.837	iso	  6.340	 0.419	 0.885
+n	  0.841	iso	  6.313	 0.412	 0.878
+n	  0.845	iso	  6.286	 0.406	 0.872
+n	  0.848	iso	  6.260	 0.399	 0.866
+n	  0.852	iso	  6.233	 0.392	 0.859
+n	  0.856	iso	  6.207	 0.385	 0.853
+n	  0.860	iso	  6.181	 0.379	 0.846
+n	  0.863	iso	  6.155	 0.372	 0.840
+n	  0.867	iso	  6.129	 0.366	 0.834
+n	  0.871	iso	  6.103	 0.359	 0.828
+n	  0.874	iso	  6.077	 0.352	 0.821
+n	  0.878	iso	  6.051	 0.346	 0.815
+n	  0.882	iso	  6.026	 0.339	 0.809
+n	  0.886	iso	  6.000	 0.333	 0.803
+n	  0.889	iso	  5.975	 0.326	 0.796
+n	  0.893	iso	  5.950	 0.320	 0.790
+n	  0.897	iso	  5.925	 0.314	 0.784
+n	  0.901	iso	  5.900	 0.307	 0.777
+n	  0.904	iso	  5.874	 0.302	 0.772
+n	  0.908	iso	  5.849	 0.296	 0.766
+n	  0.912	iso	  5.824	 0.290	 0.760
+n	  0.915	iso	  5.799	 0.284	 0.754
+n	  0.919	iso	  5.774	 0.278	 0.748
+n	  0.923	iso	  5.749	 0.272	 0.742
+n	  0.927	iso	  5.724	 0.267	 0.737
+n	  0.930	iso	  5.700	 0.261	 0.731
+n	  0.934	iso	  5.675	 0.255	 0.725
+n	  0.938	iso	  5.651	 0.250	 0.720
+n	  0.942	iso	  5.626	 0.244	 0.714
+n	  0.945	iso	  5.602	 0.238	 0.708
+n	  0.949	iso	  5.578	 0.233	 0.703
+n	  0.956	iso	  5.530	 0.222	 0.693
+n	  0.964	iso	  5.482	 0.211	 0.685
+n	  0.971	iso	  5.435	 0.200	 0.676
+n	  0.979	iso	  5.388	 0.189	 0.668
+n	  0.986	iso	  5.341	 0.178	 0.659
+n	  0.994	iso	  5.295	 0.167	 0.650
+n	  1.001	iso	  5.249	 0.157	 0.642
+n	  1.009	iso	  5.203	 0.147	 0.635
+n	  1.016	iso	  5.158	 0.138	 0.627
+
