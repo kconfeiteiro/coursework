@@ -83,7 +83,9 @@ def histrogram(
 def prepare_data(*dframes):
     newdframes = []
     for dframe in dframes:
-        dframe = dframe[["B-V", "Vmag"]]
+        dframe["B"] = dframe["Vmag"].astype(np.float64) + dframe["B-V"].astype(np.float64)
+        dframe["B"] = dframe["B"].astype(np.float64)
+        dframe = dframe[["B-V", "B"]]
         dframe.sort_values(dframe.columns[0], inplace=True)
         dframe = dframe.astype(np.float64)
         dframe = (dframe.iloc[:, 1], dframe.iloc[:, 0])

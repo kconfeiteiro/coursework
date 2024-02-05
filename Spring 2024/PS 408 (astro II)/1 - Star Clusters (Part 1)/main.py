@@ -12,11 +12,10 @@ CONFIG = {
         "masses": "0.8 0.9 1 1.1 1.25 1.35 1.5 3 4 7 20 25 32 85 120".split(),
     },
     "cluster8": {"path": "DATA\\cluster8.txt"},
-"read kwargs": {"sep": r"\s+", "comment": "#", "on_bad_lines": "skip"},
-"columns": "B B-V".split(),
+    "read kwargs": {"sep": r"\s+", "comment": "#", "on_bad_lines": "skip"},
+    "columns": "B B-V".split(),
     "sun vals": (3.761, 0),
 }
-
 
 (
     ISO1,
@@ -35,7 +34,8 @@ ISO1, ISO2, ISO3, ISO4, ISO5 = prepare_data(ISO1, ISO2, ISO3, ISO4, ISO5)
 
 # my cluster (cluster #8)
 CLUSTER_8 = pd.read_csv(CONFIG["cluster8"]["path"], **CONFIG["read kwargs"])
-DATA = (CLUSTER_8["B-V"], CLUSTER_8["V"])
+CLUSTER_8["B"] = CLUSTER_8["B-V"] + CLUSTER_8["V"]
+DATA = (CLUSTER_8["B-V"], CLUSTER_8["B"])
 
 # plot
 FIG, AXES = plt.subplots()
