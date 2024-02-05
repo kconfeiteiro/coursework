@@ -17,6 +17,10 @@ def uniquefilename(
 ):
     base_name, ext = os.path.splitext(filename)
     unique_name, counter = filename, 1
+
+    if not os.path.exist(savepath):
+        os.makedirs(savepath)
+
     while os.path.exists(os.path.join(savepath, unique_name)):
         counter += 1
         unique_name = f"{base_name}({counter}){ext}"
@@ -66,9 +70,9 @@ def read_isochrones(*paths, **kwargs):
 
 
 def histrogram(
-    data, bins, xtitle, ytitle, figtitle, color="skyblue", edgecolor="black", save_as=None
+    data, bins, xtitle, ytitle, figtitle, color="skyblue", edgecolor="black", save_as=None, **kwargs
 ):
-    fig, axes = plt.subplots()
+    fig, axes = plt.subplots(**kwargs)
     axes.hist(data=data, bins=bins, color=color, edgecolor=edgecolor)
     axes.set_xlabel(xtitle)
     axes.set_ylabel(ytitle)
@@ -76,7 +80,6 @@ def histrogram(
 
     if save_as:
         fig.savefig(save_as)
-
     plt.show()
 
 
@@ -86,7 +89,6 @@ def prepare_data(*dframes):
         dframe["B"] = dframe["Vmag"].astype(np.float64) + dframe["B-V"].astype(np.float64)
         dframe["B"] = dframe["B"].astype(np.float64)
         dframe = dframe[["B-V", "B"]]
-        dframe.sort_values(dframe.columns[0], inplace=True)
         dframe = dframe.astype(np.float64)
         dframe = (dframe.iloc[:, 1], dframe.iloc[:, 0])
         newdframes.append(dframe)
@@ -99,4 +101,4 @@ def change_col_dtype(*dframes, colname, new_dtype=np.float64, remove_cols=None):
         if remove_cols:
             dframe = dframe.drop(columns=remove_cols)
 
-        dframe[colname] = dframe[colname].as_type(new_dtype)
+        dframe[colname] = dframe[colname].astype(new_dtype)
