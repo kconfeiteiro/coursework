@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-
 def list_dir(rel_path):
     ABS = os.path.abspath(rel_path)
     listed_paths = os.listdir(rel_path)
@@ -86,11 +85,9 @@ def histrogram(
 def prepare_data(*dframes):
     newdframes = []
     for dframe in dframes:
-        dframe["B"] = dframe["Vmag"].astype(np.float64) + dframe["B-V"].astype(np.float64)
-        dframe["B"] = dframe["B"].astype(np.float64)
-        dframe = dframe[["B-V", "B"]]
+        dframe = dframe[["B-V", "V"]]
         dframe = dframe.astype(np.float64)
-        dframe = (dframe.iloc[:, 1], dframe.iloc[:, 0])
+        dframe = tuple(dframe[column] for column in dframe.columns)
         newdframes.append(dframe)
 
     return tuple(newdframes)
@@ -102,3 +99,7 @@ def change_col_dtype(*dframes, colname, new_dtype=np.float64, remove_cols=None):
             dframe = dframe.drop(columns=remove_cols)
 
         dframe[colname] = dframe[colname].astype(new_dtype)
+
+
+def distance_modulus(app_mag, abs_mag, extinction):
+    return 10 ** (0.2(app_mag - abs_mag) - extinction)
