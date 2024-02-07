@@ -15,7 +15,7 @@ Objectives
 3. Manually adjust the cluster's y-axis data from (2) to match the best isochrone
 """
 import pandas as pd
-from helpers import list_dir, prepare_data, read_isochrones
+from helpers import list_dir, prepare_data, read_isochrones, distance_modulus
 from matplotlib import pyplot as plt
 
 # assignment configuration dictionary
