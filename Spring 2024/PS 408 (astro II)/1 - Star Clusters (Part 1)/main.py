@@ -14,7 +14,6 @@ Objectives
 2. Overlay your cluster's data
 3. Manually adjust the cluster's y-axis data from (2) to match the best isochrone
 """
-from turtle import distance
 import pandas as pd
 from helpers import list_dir, prepare_data, read_isochrones, distance_modulus
 from matplotlib import pyplot as plt
