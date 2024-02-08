@@ -3,28 +3,12 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
+
 def list_dir(rel_path):
     ABS = os.path.abspath(rel_path)
     listed_paths = os.listdir(rel_path)
     prepend = lambda path: os.path.join(ABS, path)
     return list(map(prepend, listed_paths))
-
-
-def uniquefilename(
-    filename,
-    savepath=None,
-):
-    base_name, ext = os.path.splitext(filename)
-    unique_name, counter = filename, 1
-
-    if not os.path.exist(savepath):
-        os.makedirs(savepath)
-
-    while os.path.exists(os.path.join(savepath, unique_name)):
-        counter += 1
-        unique_name = f"{base_name}({counter}){ext}"
-
-    return (os.path.join(savepath, unique_name), counter)
 
 
 def read_data(
@@ -84,8 +68,9 @@ def histrogram(
 
 def prepare_data(*dframes):
     newdframes = []
-    for dframe in dframes:
-        dframe = dframe[["B-V", "V"]]
+    for i, dframe in enumerate(dframes):
+        print(f"Dframe {i}")
+        dframe = dframe[["B-V", "Vmag"]]
         dframe = dframe.astype(np.float64)
         dframe = tuple(dframe[column] for column in dframe.columns)
         newdframes.append(dframe)
@@ -101,5 +86,7 @@ def change_col_dtype(*dframes, colname, new_dtype=np.float64, remove_cols=None):
         dframe[colname] = dframe[colname].astype(new_dtype)
 
 
-def distance_modulus(app_mag, abs_mag, extinction):
-    return 10 ** (0.2(app_mag - abs_mag) - extinction)
+def distance_modulus(dist_mod, extinction=None):
+    if extinction:
+        return 10 ** (0.2 * dist_mod + 1 - extinction)
+    return 10 ** (0.2 * dist_mod + 1)

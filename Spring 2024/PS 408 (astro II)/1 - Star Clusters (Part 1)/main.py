@@ -15,7 +15,7 @@ Objectives
 3. Manually adjust the cluster's y-axis data from (2) to match the best isochrone
 """
 import pandas as pd
-from helpers import list_dir, prepare_data, read_isochrones, distance_modulus
+from helpers import distance_modulus, list_dir, prepare_data, read_isochrones
 from matplotlib import pyplot as plt
 
 # assignment configuration dictionary
@@ -54,17 +54,17 @@ if CFG["y-shift"]:
 DATA = (CLUSTER_8["B-V"], CLUSTER_8["V"])
 
 # estimate distance using distance modulus (w/ extinction)
-
+CLUSTER_DISTANCE = distance_modulus(CFG["y-shift"])
 
 # plot
 FIG, AXES = plt.subplots()
 AXES.scatter(*DATA, s=5, label="Cluster 8")
-AXES.plot(*ISO1[::-1], label="6.5 Myr")
-AXES.plot(*ISO2[::-1], label="7.5 Myr")
-AXES.plot(*ISO3[::-1], label="8.5 Myr")
-AXES.plot(*ISO4[::-1], label="9.5 Myr")
-AXES.plot(*ISO5[::-1], label="10.1 Myr")
-AXES.set_title(r"Color Magnitude Diagram (CMD) - Cluster #8")
+AXES.plot(*ISO1, label="6.5 Myr")
+AXES.plot(*ISO2, label="7.5 Myr")
+AXES.plot(*ISO3, label="8.5 Myr")
+AXES.plot(*ISO4, label="9.5 Myr")
+AXES.plot(*ISO5, label="10.1 Myr")
+AXES.set_title(f"Color Magnitude Diagram (CMD) - Cluster #8 ({CLUSTER_DISTANCE:.03f} pc)")
 AXES.set_ylabel(r"$B_{mag}$")
 AXES.set_xlabel(r"$B-V$")
 AXES.invert_yaxis()
