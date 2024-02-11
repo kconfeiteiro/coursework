@@ -69,11 +69,11 @@ def histrogram(
 def prepare_data(*dframes):
     newdframes = []
     for i, dframe in enumerate(dframes):
-        print(f"Dframe {i}")
         dframe = dframe[["B-V", "Vmag"]]
         dframe = dframe.astype(np.float64)
         dframe = tuple(dframe[column] for column in dframe.columns)
         newdframes.append(dframe)
+        print(f"Isohrone #{i} prepared")
 
     return tuple(newdframes)
 

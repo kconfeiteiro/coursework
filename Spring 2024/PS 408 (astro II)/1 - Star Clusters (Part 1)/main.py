@@ -27,8 +27,8 @@ CFG = {
     "cluster8": {"path": "DATA\\cluster8.txt"},
     "read kwargs": {"sep": r"\s+", "comment": "#", "on_bad_lines": "skip"},
     "columns": "B B-V".split(),
-    "sun vals": (3.761, 0),
-    "y-shift": 10.5,
+    "dist-mod-1": 10.5,
+    "reddening-C8": 2.5482,
 }
 
 # read data
@@ -48,25 +48,36 @@ ISO1, ISO2, ISO3, ISO4, ISO5 = prepare_data(ISO1, ISO2, ISO3, ISO4, ISO5)
 
 # my cluster (cluster #8)
 CLUSTER_8 = pd.read_csv(CFG["cluster8"]["path"], **CFG["read kwargs"])
-if CFG["y-shift"]:
-    CLUSTER_8["V"] = CLUSTER_8["V"] - CFG["y-shift"]
+if CFG["dist-mod-1"]:
+    CLUSTER_8["V-part1"] = CLUSTER_8["V"] - CFG["dist-mod-1"]
 
-DATA = (CLUSTER_8["B-V"], CLUSTER_8["V"])
+if CFG["reddening-C8"]:
+    CLUSTER_8["reddened"] = CLUSTER_8["V"] + CFG["reddening-C8"]
+
+DATA = (CLUSTER_8["B-V"], CLUSTER_8["V-part1"])
+DATA_R = (CLUSTER_8["B-V"], CLUSTER_8["reddened"])
 
 # estimate distance using distance modulus (w/ extinction)
-CLUSTER_DISTANCE = distance_modulus(CFG["y-shift"])
+CLUSTER_DISTANCE = distance_modulus(CFG["dist-mod-1"])
 
-# plot
+# calculate the reddening for cluster 8
+R_V = 3.1
+CLUSTER_A_V = CFG["reddening-C8"] * R_V
+print("\nCalculated Av value for cluster #8: ", CLUSTER_A_V)
+
+# plot cluster & isochrones
 FIG, AXES = plt.subplots()
-AXES.scatter(*DATA, s=5, label=r"Cluster 8 (w/o $A_v$)")
+AXES.scatter(*DATA, s=5, label=r"Cluster 8")
+AXES.scatter(*DATA_R, s=12, marker="*", label=r"Corrected")
 AXES.plot(*ISO1, label="6.5 Myr")
 AXES.plot(*ISO2, label="7.5 Myr")
 AXES.plot(*ISO3, label="8.5 Myr")
 AXES.plot(*ISO4, label="9.5 Myr")
 AXES.plot(*ISO5, label="10.1 Myr")
 AXES.set_title(f"Color Magnitude Diagram (CMD)")
-AXES.set_ylabel(r"$B_{mag}$")
+AXES.set_ylabel(r"$V_{mag}$")
 AXES.set_xlabel(r"$B-V$")
 AXES.invert_yaxis()
-AXES.legend(loc="upper right")
+AXES.legend(loc="lower right")
+FIG.tight_layout()
 plt.show()
