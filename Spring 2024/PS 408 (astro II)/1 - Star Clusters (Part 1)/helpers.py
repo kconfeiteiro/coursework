@@ -86,7 +86,11 @@ def change_col_dtype(*dframes, colname, new_dtype=np.float64, remove_cols=None):
         dframe[colname] = dframe[colname].astype(new_dtype)
 
 
-def distance_modulus(dist_mod, extinction=None):
+def calculate_distance(dist_mod, extinction=None):
     if extinction:
         return 10 ** (0.2 * dist_mod + 1 - extinction)
     return 10 ** (0.2 * dist_mod + 1)
+
+
+def percent_error(absolute, theoretical):
+    return (abs(absolute - theoretical) / theoretical)
