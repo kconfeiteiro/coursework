@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
 
 def list_dir(rel_path):
@@ -52,20 +51,6 @@ def read_isochrones(*paths, **kwargs):
     return tuple(data)
 
 
-def histrogram(
-    data, bins, xtitle, ytitle, figtitle, color="skyblue", edgecolor="black", save_as=None, **kwargs
-):
-    fig, axes = plt.subplots(**kwargs)
-    axes.hist(data=data, bins=bins, color=color, edgecolor=edgecolor)
-    axes.set_xlabel(xtitle)
-    axes.set_ylabel(ytitle)
-    axes.set_title(figtitle)
-
-    if save_as:
-        fig.savefig(save_as)
-    plt.show()
-
-
 def prepare_data(*dframes):
     newdframes = []
     for i, dframe in enumerate(dframes):
@@ -89,8 +74,26 @@ def change_col_dtype(*dframes, colname, new_dtype=np.float64, remove_cols=None):
 def calculate_distance(dist_mod, extinction=None):
     if extinction:
         return 10 ** (0.2 * dist_mod + 1 - extinction)
-    return 10 ** (0.2 * dist_mod + 1)
+    else:
+        return 10 ** (0.2 * dist_mod + 1)
 
 
 def percent_error(absolute, theoretical):
-    return (abs(absolute - theoretical) / theoretical)
+    return abs(absolute - theoretical) / theoretical
+
+
+# plot Salpeter and Kroupa IMFs
+# SOURCE: https://commons.wikimedia.org/wiki/ File:Plot_of_various_initial_mass_functions.svg
+def salpeter55(masses, alpha=2.35):
+    return masses**-alpha
+
+
+def kroupa01(masses):
+    return np.where(
+        masses < 0.08,
+        masses**-0.3,
+        np.where(
+            masses < 0.5,
+            0.08**-0.3 * (masses / 0.08) ** -1.3,
+            0.08**-0.3 * (0.5 / 0.08) ** -1.3 * (masses / 0.5) ** -2.3,
+    ))

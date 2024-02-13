@@ -1,21 +1,36 @@
 """
-Star Cluster assignment (Part 1) -- PS 408-02DB Spring 2024
+Star Cluster assignment (Part 1) -- PS 408-02DB Spring 2024.
 
 Module Information
 ------------------
 Workspace: 1 - Star Clusters (Part 1)
-FIlename: main.py
+Filename: main.py
 Path: main.py
-Date: February, 06 2024
+Creator: Krysitan Ojeda Confeiteiro
+    - `confeitk@my.erau.edu` (work)
+    - `confeitk@outlook.com` (personal)
 
 Objectives
-------
+----------
 1. Plot isochrones from the given ranges
-2. Overlay your cluster's data
-3. Manually adjust the cluster's y-axis data from (2) to match the best isochrone
+2. Overlay your cluster"s data
+3. Manually adjust the cluster"s y-axis data from (2) to match the best isochrone
+
+Sources & References
+--------------------
+1. https://commons.wikimedia.org/wiki/File:Plot_of_various_initial_mass_functions.svg
+    - For the functions for the IMF and the histogram
 """
 import pandas as pd
-from helpers import calculate_distance, list_dir, prepare_data, read_isochrones, percent_error
+from helpers import (
+    calculate_distance,
+    list_dir,
+    prepare_data,
+    read_isochrones,
+    percent_error,
+    salpeter55,
+    kroupa01
+)
 from matplotlib import pyplot as plt
 
 # assignment configuration dictionary
@@ -27,7 +42,7 @@ CFG = {
     "cluster8": {"path": "DATA/cluster8.txt", "masses": "DATA/c8_w_masses.txt"},
     "read kwargs": {"sep": r"\s+", "comment": "#", "on_bad_lines": "skip"},
     "columns": "B B-V".split(),
-    "dist-mod-1": 10.5,
+    "dist-mod-1": 10.25, # vertical shift for best-fit isochrone
     "actual-dist-mod": 13.93,
     "reddening-C8": 2.5482,
     "actual-C8-dist": 1886,
@@ -75,12 +90,12 @@ print("\nCalculated Av value for cluster #8: ", c8_av)
 fig, axes = plt.subplots()
 fig.tight_layout()
 
-axes.set_title(f"Color Magnitude Diagram (CMD)")
+axes.set_title(f"Color Magnitude Diagram (CMD) - IC 1805")
 axes.set_ylabel(r"$V_{mag}$")
 axes.set_xlabel(r"$B-V$")
 
-axes.scatter(*DATA, s=5, label=r"Cluster 8")
-axes.scatter(*DATA_R, s=12, marker="*", label=r"Corrected")
+axes.scatter(*DATA, s=5, label="Reddened")
+axes.scatter(*DATA_R, s=12, marker="*", label="De-reddened")
 axes.plot(*ISO1, label="6.5 Myr")
 axes.plot(*ISO2, label="7.5 Myr")
 axes.plot(*ISO3, label="8.5 Myr")
@@ -88,25 +103,53 @@ axes.plot(*ISO4, label="9.5 Myr")
 axes.plot(*ISO5, label="10.1 Myr")
 
 axes.invert_yaxis()
-axes.arrow(
-    x=0,
-    y=10,
-    dx=0,
-    dy=-5,
-    linestyle="-",
-    capstyle="projecting",
-    width=0.075,
-    head_width=0.2,
-    head_length=1,
+axes.annotate(
+    text="",
+    xy=(0.0, -1.75),
+    xytext=(-0.1, -4.15),
+    fontsize=10,
+    horizontalalignment="right",
+    arrowprops=dict(facecolor="black", shrink=0.05),
+    verticalalignment="top"
+)
+axes.legend(loc="lower right")
+
+text_position = (0.3, -3.5)
+axes.annotate(
+    text="Reddening",
+    xy=text_position,
+    xytext=text_position,
+    fontsize=10,
+    horizontalalignment="right",
+    verticalalignment="top"
 )
 axes.legend(loc="lower right")
 
 # plot histogram of masses
 fig2, axes2 = plt.subplots()
-axes2.hist(C8_MASSES.Mass)
+sorted_masses = C8_MASSES.Mass.dropna().sort_values()
+
+# salpeter55 [1]
+axes2.plot(
+    sorted_masses,
+    salpeter55(sorted_masses) / salpeter55(1),
+    label="Salpeter 55",
+    linewidth=2
+)
+
+# kroupa01 [1]
+axes2.plot(
+    sorted_masses,
+    kroupa01(sorted_masses) / kroupa01(1),
+    label="Kroupa 01",
+    linewidth=2
+)
+
+axes2.hist(C8_MASSES.Mass, color="lightblue") # histogram
 axes2.set_xlabel(r"Masses $(M/M_\odot)$")
-axes2.set_title(r"IC 1805 Histogram of Masses $(M/M_\odot)$")
+axes2.set_title("IC 1805 - Histogram of Masses")
 fig2.tight_layout()
+axes2.legend()
 plt.show()
 
 # calculate percent errors
