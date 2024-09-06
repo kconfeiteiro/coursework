@@ -10,7 +10,7 @@ def jd_to_calendar(jd_time, base_jdtime=1721424.5, date_format="%m/%d/%Y %H:%M:%
 
 
 def transit_jd_date(
-    transit_number, transit_time=5.551497500, time_since_last_transit=2458895.773170
+    transit_number, transit_time=2.315000, time_since_last_transit=2460384.5187500
 ):
     """
     Determines the JD date of the next transit based on the time (in hours) for a transit along with the JD for the time of the last recorded transit.
@@ -37,6 +37,7 @@ utc_time = datetime.now(timezone.utc)
 UTC_IN_HRS = float((utc_time.day * 24) + (utc_time.hour + (utc_time.minute / 60)))
 
 
+# determine JD time
 def calc_JD_time(year, month, day, utc1=UTC_IN_HRS):
     """
     Calculates the JD date from a calendar date.
@@ -69,8 +70,7 @@ def calc_JD_time(year, month, day, utc1=UTC_IN_HRS):
     )
 
 
-trial1 = (2024, 2, 21)
-print("Trial 1 (YYYY, M, D): ", trial1)
-
-trial1_JD = calc_JD_time(*trial1)
-print("Calculated JD time: ", trial1_JD)
+trial1 = (2024, 3, 5) # example time to test code
+# trial1_JD = calc_JD_time(*trial1)
+# print(f"Calculated JD time for {trial1}: {trial1_JD}")
+print("JD Date of next transit: ", transit_jd_date(5))
