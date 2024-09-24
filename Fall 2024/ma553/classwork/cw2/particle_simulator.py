@@ -3,12 +3,14 @@
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from random import uniform
+import numpy as np
+import numexpr as ne
 import time
 import timeit
 
 
 class Particle:
-    #__slots__ = ('x', 'y', 'ang_speed')
+    __slots__ = ("x", "y", "ang_speed")
     def __init__(self, x, y, ang_speed):
         self.x = x
         self.y = y
@@ -32,20 +34,15 @@ class ParticleSimulator:
                 p.x += d_x
                 p.y += d_y
 
-        # Change the loop order
-        #for p in self.particles:
-        #    t_x_ang = dt * p.ang_speed
-        #    for i in range(nsteps):
-        #        norm = (p.x**2 + p.y**2)**0.5
-        #        p.x, p.y = p.x - t_x_ang*p.y/norm, p.y + t_x_ang * p.x/norm
+
 
 def visualize(simulator, tmax=0.01, dt=0.00001):
     X = [p.x for p in simulator.particles]
     Y = [p.y for p in simulator.particles]
 
     fig = plt.figure()
-    ax = plt.subplot(111, aspect='equal')
-    line, = ax.plot(X, Y, 'ro')
+    ax = plt.subplot(111, aspect="equal")
+    line, = ax.plot(X, Y, "ro")
 
     # Axis limits
     plt.xlim(-1, 1)
@@ -70,7 +67,7 @@ def visualize(simulator, tmax=0.01, dt=0.00001):
                                  init_func=init,
                                  blit=True,
                                  interval=10)
-    anim.save('Animation.gif', writer='imagemagick', fps=30)
+    anim.save("Animation.gif", writer="imagemagick", fps=30)
     plt.show()
 
 
@@ -88,8 +85,8 @@ def plot_trajectory(simulator,tmax=0.01, dt=0.00001):
         x0.append(x[0]);x1.append(x[1]);x2.append(x[2])
         y0.append(y[0]);y1.append(y[1]);y2.append(y[2])
     fig=plt.figure()
-    ax = fig.add_subplot(111, aspect='equal')
-    ax.plot(x0,y0,'r-',x1,y1,'g-',x2,y2,'b-')
+    ax = fig.add_subplot(111, aspect="equal")
+    ax.plot(x0,y0,"r-",x1,y1,"g-",x2,y2,"b-")
     # Axis limits
     plt.xlim(-1, 1)
     plt.ylim(-1, 1)
@@ -111,7 +108,7 @@ def benchmark_memory():
     simulator = ParticleSimulator(particles)
     simulator.evolve(0.001)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     dt=0.00001
     tmax=1
     particles = [Particle( 0.3, 0.5, +1),
@@ -123,5 +120,3 @@ if __name__ == '__main__':
     benchmark()
 
     benchmark_memory()
-
-

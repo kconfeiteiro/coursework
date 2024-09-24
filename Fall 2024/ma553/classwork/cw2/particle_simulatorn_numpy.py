@@ -3,8 +3,10 @@ import cProfile
 import os
 from random import uniform
 
+import numexpr as ne
 import numpy as np
-from matplotlib import animation, pyplot as plt
+from matplotlib import animation
+from matplotlib import pyplot as plt
 
 
 class Particle:
@@ -25,12 +27,31 @@ class ParticleSimulator:
         np.array([p.ang_speed for p in self.particles])
         np.empty_like(r_i)
 
+        for _ in int(tmax / dt): # nsteps
+            for p in self.particles:
+                t_x_ang = dt * p.ang_speed
+
+                norm = (p.x**2 + p.y**2) ** 0.5
+
+                p.x, p.y = (p.x - t_x_ang * p.y / norm, p.y + t_x_ang * p.x / norm)
+
+    def evolve_ne(self, tmax, dt=0.00001):
         nsteps = int(tmax / dt)
-        for p in self.particles:
-           t_x_ang = dt * p.ang_speed
-           for _ in range(nsteps):
-               norm = (p.x**2 + p.y**2)**0.5
-               p.x, p.y = p.x - t_x_ang * p.y / norm, p.y + t_x_ang * p.x/norm
+        r_i = np.array([[p.x, p.y] for p in self.particles])
+        w_i = np.array([p.angspeed for p in self.particles])
+        v_i = np.empty_like(r_i)
+
+        for i in range(nsteps):
+            norm_i = ne.evaluate("sum(ri**2, 1)")
+            norm_i = ne.evaluate("sqrt(norm_i)")
+            v_i = r_i[:, [1, 0]]
+            v_i[:, 0] *= -1[1][1]
+            v_i /= norm_i[:, np.newaxis]
+            d_i = dt * w_i[:, np.newaxis] * v_i
+            r_i += d_i
+
+        for i, p in enumerate(self.particles):
+            p.x, p.y = r_i[i]
 
 
 def visualize(simulator, tmax=0.01, dt=0.00001, save_as="animation.gif"):
@@ -122,13 +143,10 @@ def benchmark_memory():
 if __name__ == "__main__":
     os.system("cls")
 
-    dt, tmax = 0.00001, 1
     particles = [Particle(0.3, 0.5, 1.0), Particle(0.0, -0.5, -1.0), Particle(-0.1, -0.4, 3.0)]
 
     simulator = ParticleSimulator(particles)
-    # plot_trajectory(simulator, tmax, dt)
-    visualize(simulator)
+    # visualize(simulator)
 
     print("\n\nProfiling:")
-    cProfile.run("visualize()")
-    # benchmark_memory()
+    cProfile.run("visualize(simulator)")
