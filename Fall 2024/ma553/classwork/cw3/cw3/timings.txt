@@ -1,0 +1,17 @@
+Script started on Wed 02 Oct 2024 09:33:27 AM EDT
+]0;confeitk@wxsession1:~/ma553/classwork/cw3[?1034h(base) [bash confeitk@wxsession1 ~/ma553/classwork/cw3 ]$ python3 -m timeit -s "from particle_simulator import benchmark" "benchmark(100, 'python')"
+1 loop, best of 5: 702 msec per loop
+]0;confeitk@wxsession1:~/ma553/classwork/cw3(base) [bash confeitk@wxsession1 ~/ma553/classwork/cw3 ]$ python3 -m timeit -s "from particle_simulator import benchmark" "benchmark(100, 'numpy')"
+1 loop, best of 5: 539 msec per loop
+]0;confeitk@wxsession1:~/ma553/classwork/cw3(base) [bash confeitk@wxsession1 ~/ma553/classwork/cw3 ]$ python3 -m timeit -s "from particle_simulator import benchmark" "benchmark(100, 'numexpr')"
+1000 loops, best of 5: 162 usec per loop
+]0;confeitk@wxsession1:~/ma553/classwork/cw3(base) [bash confeitk@wxsession1 ~/ma553/classwork/cw3 ]$ python3 -m timeit -s "from particle_simulator import benchmark" "benchmark(100, 'cython')"
+5 loops, best of 5: 23.9 msec per loop
+]0;confeitk@wxsession1:~/ma553/classwork/cw3(base) [bash confeitk@wxsession1 ~/ma553/classwork/cw3 ]$ python3 -m timeit -s "from particle_simulator import benchmark" "benchmark(100, 'cython')"
+5 loops, best of 5: 27.9 msec per loop
+]0;confeitk@wxsession1:~/ma553/classwork/cw3(base) [bash confeitk@wxsession1 ~/ma553/classwork/cw3 ]$ python -m timeit -s "from particle_simulator import benchmark" "benchmark(100, 'cython')"
+5 loops, best of 5: 23.8 msec per loop
+]0;confeitk@wxsession1:~/ma553/classwork/cw3(base) [bash confeitk@wxsession1 ~/ma553/classwork/cw3 ]$ exit
+exit
+
+Script done on Wed 02 Oct 2024 09:51:35 AM EDT
