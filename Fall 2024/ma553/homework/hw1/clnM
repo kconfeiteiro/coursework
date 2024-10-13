@@ -1,0 +1,18 @@
+#!/bin/csh -f 
+#------- clean ^M from DOS files  (using sed)
+#	  usage: clnM file
+#
+set fn="$1" 
+#
+/usr/bin/mv  -f $1 tmp."$fn" 
+/usr/bin/sed "s///g" tmp."$fn" > $fn
+/usr/bin/rm  -f ./tmp."$fn"
+
+### replaces 
+### alias cleanM 'mv -f \!* tmp."\!^"; sed "s/^M//" tmp."\!^" > \!^ \
+#		  rm -f tmp."\!^" '
+
+### remove control chars from a file (e.g. "typescript" from script):
+### other ways to do it:
+#       within vi: :1,$s/^V^M//g  (that's CTRL V CTRL M)
+#       with tr  : tr -d "\015 \010" < in > out (ruins spaces on solaris)
