@@ -1,0 +1,32 @@
+STEP 2
+-------
+kconfeiteiro@KCBeast:/mnt/c/Users/kconf/Downloads/venv_courses/Coursecodes/Fall 2024/ma553/classwork/cw4$ time python3 square.py
+ 1x1 = 1 computed from PID 227
+ 2x2 = 4 computed from PID 228
+ 3x3 = 9 computed from PID 229
+ 4x4 = 16 computed from PID 230
+ 5x5 = 25 computed from PID 231
+ 6x6 = 36 computed from PID 232
+ 7x7 = 49 computed from PID 233
+ 8x8 = 64 computed from PID 234
+ 9x9 = 81 computed from PID 235
+ 10x10 = 100 computed from PID 236
+
+real    0m0.053s
+user    0m0.017s
+sys     0m0.019s
+
+STEP 3
+-------
+PS C:\Users\kconf\Downloads\venv_courses\Coursecodes\Fall 2024\ma553\classwork\cw4> python -m timeit -s "from particle_simulator4 import benchmark" "benchmark(100, 'cython')"
+10 loops, best of 5: 32.3 msec per loop
+
+STEP 5
+-------
+(base) [-bash confeitk@wxsession3 ~/ma553/classwork/cw4 ]$ python3 -m timeit -s "from particle_simulator4 import benchmark" "benchmark(100, 'cython')"
+10 loops, best of 5: 23.6 msec per loop
+
+STEP 6
+-------
+(base) [-bash confeitk@wxsession3 ~/ma553/classwork/cw4 ]$ python3 -m timeit -s "from particle_simulator4 import benchmark" "benchmark(100, 'openmp')"
+10 loops, best of 5: 31 msec per loop
