@@ -7,6 +7,7 @@
 import time
 cimport cython
 from libc.math cimport abs
+import numpy as np
 
 from heat2dparams import D, Nx, Ny, plot, tmax, tout, xmax, xmin, ymax, ymin
 from heat2dplot import plotsol
@@ -68,11 +69,13 @@ def main():
     if plot_interval == 0:
         plot_interval=1
 
-    # Allocate arrays x, y, u, u_new.
-    cdef double[:] x=[xmin + i * dx for i in range(Nx + 1)]  # x values
-    cdef double[:] y=[ymin + i * dy for i in range(Ny + 1)]  # y values
-    cdef double[:, :] u=[[0.0] * (Ny + 1) for i in range(Nx + 1)]  # time step t
-    cdef double[:, :] u_new=[[0.0] * (Ny + 1) for i in range(Nx + 1)]  # time step t+1
+    # Allocate arrays x, y, u, u_new
+    cdef double[:] x = np.linspace(xmin, xmin + Nx * dx, Nx + 1, dtype=np.float64)
+    cdef double[:] y = np.linspace(ymin, ymin + Ny * dy, Ny + 1, dtype=np.float64)
+
+    # Create 2D arrays for u and u_new directly using np.zeros
+    cdef double[:, :] u = np.zeros((Nx + 1, Ny + 1), dtype=np.float64)
+    cdef double[:, :] u_new = np.zeros((Nx + 1, Ny + 1), dtype=np.float64)
 
     # Initialize and output/plot initial profile.
     initialize(u, x, y)
@@ -80,18 +83,15 @@ def main():
     print("Parameters")
 
     print("----------")
-    print("\tD={}, xmin={}, xmax={}, ymin={}, ymax={}".format(D, xmin, xmax, ymin, ymax))
-    print("\tdx={}, dy={}, dt={}".format(dx, dy, dt))
-    print("\ttotal time steps={}, plot interval={}\n".format(nsteps, plot_interval))
+    print("D={}, xmin={}, xmax={}, ymin={}, ymax={}".format(D, xmin, xmax, ymin, ymax))
+    print("dx={}, dy={}, dt={}".format(dx, dy, dt))
+    print("\nTotal time steps={}, plot interval={}\n".format(nsteps, plot_interval))
 
     # Iterate and plot solution
     cdef double t0=time.time()
     iterate(u_new, u, dt, dx2, dy2, nsteps, plot_interval)
     cdef double t1=time.time()
 
-    print('\tat t={0:5.2f}'.format(tmax))
+    print('\tAt t={0:5.2f}'.format(tmax))
     print("\nSimulation finished in {0} s".format(t1 - t0))
 
-
-if __name__ == '__main__':
-    main()
