@@ -1,0 +1,28 @@
+# File: Makefile_cython
+#
+# Compiles the python particle_simulator code as an extension with cython,
+# and runs it.
+#
+# Call with "make -f Makefile_cython"
+#
+
+CC=gcc
+CXX=g++
+
+run_ps: particle_simulator4.py cevolve.so 
+	time python particle_simulator4.py
+
+cevolve.so: cevolve.pyx setup_cython.py
+	python ps_setup.py build_ext --inplace
+
+setup_cython.py: Makefile_cython
+	echo 'from distutils.core import setup' > $@
+	echo 'from Cython.Build import cythonize' >> $@
+	echo 'setup(ext_modules = cythonize("cevolve.pyx"))' >> $@
+
+.PHONY: clean run_ps
+clean:
+	\rm -f setup_cython.py cevolve.so
+
+
+
