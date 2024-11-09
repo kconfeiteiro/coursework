@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -q dev #short, normalq
+#PBS -l nodes=1:ppn=16
+#PBS -l walltime=00:15:00
+# PBS -M # you@my.erau.edu 
+#PBS -N p_test #JOB_NAME
+#PBS -d /MA453/Classwork/cw5
+# PBS <-- This is a comment, note the whitespace
+
+### cd to directory where the job was submitted:
+cd "${PBS_O_WORKDIR}"
+
+# load the required environment modules 
+module load gcc/8.5.0-gcc-8.5.0-cokvw3c
+module load python/3.11.7-gcc-8.5.0-wfpopp
+module load mpich/4.1.2-gcc-8.5.0-ilpszmm
+
+
+### run the program (on the nodes as provided by PBS):
+
+date
+mpirun -n 16 python hello_mpi.py > ${PBS_JOBNAME}.out 
+date
+
+#date
+#mpirun -ppn $PBS_NUM_PPN -f $PBS_NODEFILE -n $PBS_NP ./mpi.x > ${PBS_JOBNAME}_mpi.out
+#date

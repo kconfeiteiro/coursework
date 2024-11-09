@@ -1,0 +1,25 @@
+# File: Makefile_cython
+#
+# Compiles the python code num_int.py as an extension with cython,
+# and runs it.
+#
+# Call with "make -f Makefile_cython"
+#
+
+CC=gcc
+CXX=g++
+
+run: num_int.py mycytlib.so
+	python num_int.py
+
+mycytlib.so: mycytlib.pyx setup_cython.py
+	python setup_cython.py build_ext --inplace
+
+setup_cython.py: Makefile_cython
+	echo 'from distutils.core import setup' > $@
+	echo 'from Cython.Build import cythonize' >> $@
+	echo 'setup(ext_modules = cythonize("mycytlib.pyx"))' >> $@
+
+.PHONY: clean run
+clean:
+	rm -rf build setup_cython.py mycytlib.c mycytlib*.so
