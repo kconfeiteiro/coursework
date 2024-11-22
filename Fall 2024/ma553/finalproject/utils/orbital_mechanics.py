@@ -1,101 +1,139 @@
+from line_profiler import profile
 import numpy as np
 
-def keplerian_to_cartesian(a, e, i, omega, w, M, mu=398600.4418):
+def keplerian_to_cartesian(
+    semi_major_axis,
+    eccentricity,
+    inclination,
+    omega,
+    argument_of_periapsis,
+    M,
+    gravitational_parameter=398600.4418,
+    loop_range=100,
+):
     # mu -> Gravitational parameter for Earth, km^3/s^2
-    # Solve Kepler's equation for E
-    E = M
-    for _ in range(100):
-        E = M + e * np.sin(E)
+    # solve Kepler's equation for E
 
-    # Compute the true anomaly
-    nu = 2 * np.arctan2(np.sqrt(1 + e) * np.sin(E / 2), np.sqrt(1 - e) * np.cos(E / 2))
+    e = M
+    for _ in range(loop_range):
+        E = M + eccentricity * np.sin(e)
+    # compute the true anomaly
 
-    # Compute the distance
-    r = a * (1 - e * np.cos(E))
+    true_anomaly = 2 * np.arctan2(
+        np.sqrt(1 + eccentricity) * np.sin(e / 2), np.sqrt(1 - eccentricity) * np.cos(e / 2)
+    )
 
-    # Position in the orbital plane
+    # compute the distance
 
-    x_orb = r * np.cos(nu)
-    y_orb = r * np.sin(nu)
+    orbital_distance = semi_major_axis * (1 - eccentricity * np.cos(e))
 
-    # Velocity in the orbital plane
+    # position in the orbital plane
 
-    vx_orb = -np.sqrt(mu / (a * (1 - e**2))) * np.sin(E)
-    vy_orb = np.sqrt(mu / (a * (1 - e**2))) * np.sqrt(1 - e**2) * np.cos(E)
+    x_orb = orbital_distance * np.cos(true_anomaly)
+    y_orb = orbital_distance * np.sin(true_anomaly)
 
-    # Rotation matrices
+    # velocity in the orbital plane
+
+    vx_orb = -np.sqrt(
+        gravitational_parameter / (semi_major_axis * (1 - eccentricity**2))
+    ) * np.sin(e)
+    vy_orb = (
+        np.sqrt(gravitational_parameter / (semi_major_axis * (1 - eccentricity**2)))
+        * np.sqrt(1 - eccentricity**2)
+        * np.cos(e)
+    )
+
+    # rotation matrices
 
     r1 = np.array(
         [[np.cos(omega), -np.sin(omega), 0], [np.sin(omega), np.cos(omega), 0], [0, 0, 1]]
     )
 
-    r2 = np.array([[1, 0, 0], [0, np.cos(i), -np.sin(i)], [0, np.sin(i), np.cos(i)]])
-    r3 = np.array([[np.cos(w), -np.sin(w), 0], [np.sin(w), np.cos(w), 0], [0, 0, 1]])
+    r2 = np.array([
+        [1, 0, 0],
+        [0, np.cos(inclination), -np.sin(inclination)],
+        [0, np.sin(inclination), np.cos(inclination)],
+    ])
+    r3 = np.array([
+        [np.cos(argument_of_periapsis), -np.sin(argument_of_periapsis), 0],
+        [np.sin(argument_of_periapsis), np.cos(argument_of_periapsis), 0],
+        [0, 0, 1],
+    ])
 
     R = r1 @ r2 @ r3
 
-    # Position and velocity in the inertial frame
+    # position and velocity in the inertial frame
 
-    r_vec = R @ np.array([x_orb, y_orb, 0])
-    v_vec = R @ np.array([vx_orb, vy_orb, 0])
+    position_vector = R @ np.array([x_orb, y_orb, 0])
+    velocity_vector = R @ np.array([vx_orb, vy_orb, 0])
 
-    return r_vec, v_vec
+    return position_vector, velocity_vector
 
 
-def cartesian_to_keplerian(state_vector):
-    r_vec, v_vec = state_vector
 
-    # Constants
-    mu = 398600.4418  # Gravitational parameter for Earth, km^3/s^2
+def cartesian_to_keplerian(state_vector, gravitational_parameter=398600.4418):
+    position_vector, velocity_vector = state_vector
 
-    # Compute specific angular momentum
-    h_vec = np.cross(r_vec, v_vec)
-    h = np.linalg.norm(h_vec)
+    # compute specific angular momentum
+    specific_angular_momentum = np.cross(position_vector, velocity_vector)
+    specific_angular_momentum_magnitude = np.linalg.norm(specific_angular_momentum)
 
-    # Compute the eccentricity vector
-    e_vec = (np.cross(v_vec, h_vec) / mu) - (r_vec / np.linalg.norm(r_vec))
-    e = np.linalg.norm(e_vec)
+    # compute the eccentricity vector
+    eccentricity_vector = (
+        np.cross(velocity_vector, specific_angular_momentum) / gravitational_parameter
+    ) - (position_vector / np.linalg.norm(position_vector))
+    eccentricity = np.linalg.norm(eccentricity_vector)
 
-    # Compute the semi-major axis
-    r = np.linalg.norm(r_vec)
-    v = np.linalg.norm(v_vec)
-    a = 1 / ((2 / r) - (v**2 / mu))
+    # compute the semi-major axis
+    radius_magnitude = np.linalg.norm(position_vector)
+    velocity_magnitude = np.linalg.norm(velocity_vector)
+    semi_major_axis = 1 / (
+        (2 / radius_magnitude) - (velocity_magnitude**2 / gravitational_parameter)
+    )
 
-    # Compute the inclination
-    i = np.arccos(h_vec[2] / h)
+    inclination = np.arccos(specific_angular_momentum[2] / specific_angular_momentum_magnitude)
+    omega = np.arctan2(specific_angular_momentum[0], -specific_angular_momentum[1])
+    argument_of_periapsis = np.arctan2(
+        eccentricity_vector[2] / np.sin(inclination),
+        eccentricity_vector[0] * np.cos(omega) + eccentricity_vector[1] * np.sin(omega),
+    )
+    true_anomaly = np.arctan2(
+        np.dot(np.cross(eccentricity_vector, position_vector), specific_angular_momentum)
+        / specific_angular_momentum_magnitude,
+        np.dot(eccentricity_vector, position_vector),
+    )
+    e = 2 * np.arctan2(
+        np.sqrt(1 - eccentricity) * np.tan(true_anomaly / 2), np.sqrt(1 + eccentricity)
+    )
+    mean_anomaly = e - eccentricity * np.sin(e)
 
-    # Compute the longitude of the ascending node
-    omega = np.arctan2(h_vec[0], -h_vec[1])
+    return semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly
 
-    # Compute the argument of periapsis
-    w = np.arctan2(e_vec[2] / np.sin(i), e_vec[0] * np.cos(omega) + e_vec[1] * np.sin(omega))
 
-    # Compute the true anomaly
-    nu = np.arctan2(np.dot(np.cross(e_vec, r_vec), h_vec) / h, np.dot(e_vec, r_vec))
+def acceleration(state, mu):
+    r = state[:3]
+    r_norm = np.linalg.norm(r)
+    a = -mu * r / r_norm**3
+    return np.hstack((state[3:], a))
 
-    # Compute the mean anomaly
-    E = 2 * np.arctan2(np.sqrt(1 - e) * np.tan(nu / 2), np.sqrt(1 + e))
-    m = E - e * np.sin(E)
+@profile
+def propagate_orbit(initial_state, time, dt=60, mu=398600.4418, t=0):
 
-    return a, e, i, omega, w, m
-
-def propagate_orbit(initial_state, time, dt=60):
-    def acceleration(state):
-        r = state[:3]
-        r_norm = np.linalg.norm(r)
-        a = -mu * r / r_norm**3
-        return np.hstack((state[3:], a))
-
-    mu = 398600.4418  # Gravitational parameter for Earth, km^3/s^2
     state = np.array(initial_state)
-    t = 0
-
     while t < time:
-        k1 = dt * acceleration(state)
-        k2 = dt * acceleration(state + 0.5 * k1)
-        k3 = dt * acceleration(state + 0.5 * k2)
-        k4 = dt * acceleration(state + k3)
+        k1 = dt * acceleration(state, mu)
+        k2 = dt * acceleration(state + 0.5 * k1, mu)
+        k3 = dt * acceleration(state + 0.5 * k2, mu)
+        k4 = dt * acceleration(state + k3, mu)
 
         state += (k1 + 2 * k2 + 2 * k3 + k4) / 6
         t += dt
+
     return state[:3], state[3:]
+
+
+def calculate_orbital_elements(semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly):
+    # Example implementation of converting orbital parameters to state vector
+    # This is a placeholder and should be replaced with actual calculations
+    state_vector = np.array([semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly])
+    return state_vector
