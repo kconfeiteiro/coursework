@@ -7,7 +7,8 @@ import pandas as pd
 def read_starfile(*filepaths, col_names=None, read_kwargs=dict(skiprows=3)):
     file = filepaths[0]
     data = np.loadtxt(file, **read_kwargs)
-    return pd.DataFrame(data, columns=col_names)
+    dataframe = pd.DataFrame(data, columns=col_names)
+    return dataframe
 
 
 def min_max_scaling(col):
@@ -15,14 +16,15 @@ def min_max_scaling(col):
 
 
 def read_spectra(*paths, normalize_col=None, **kwargs):
-    data = []
+    data = {}
     for i, path in enumerate(paths):
         print(f"Reading path ({i + 1}): {path}")
         dataframe = pd.read_csv(path, **kwargs)
 
-        if normalize_col is not None:
+        if normalize_col:
             dataframe[normalize_col] = min_max_scaling(dataframe[normalize_col])
-        data.append(dataframe)
+
+        data[f"star{i + 1}"] = dataframe
 
     print(f"Read data files: {len(paths)}")
     return data[0] if len(paths) == 1 else data
@@ -34,17 +36,22 @@ def list_directory(path):
 
 def plot_single_spectra(
     data,
-    title,
-    xtitle="Wavelength",
-    ytitle="Flux",
+    title=None,
+    xtitle=None,
+    ytitle=None,
     plt_kwargs=dict(tight_layout=True),
+    ax=None,
     save_as=None,
 ):
-    fig, axes = plt.subplots(**plt_kwargs)
-    axes.plot(data["Wavelength"], data["Flux"])
-    axes.set_xlabel(xtitle)
-    axes.set_ylabel(ytitle)
-    axes.set_title(title)
+    if ax is None:
+        fig, ax = plt.subplots(**plt_kwargs)
+    else:
+        fig = ax.get_figure()
+
+    ax.plot(data["Wavelength"], data["Flux"])
+    ax.set_xlabel(xtitle)
+    ax.set_ylabel(ytitle)
+    ax.set_title(title)
 
     if save_as:
         print(f"Saved figure as: `{save_as}`")
@@ -54,6 +61,7 @@ def plot_single_spectra(
 def normalize_spectra(dataframes_dict):
     processed_data = {}
     for key, spectrum_data in dataframes_dict.items():
+        print("spectrum_data: ", spectrum_data)
         max_flux = spectrum_data["Flux"].max()
         normalized_flux = spectrum_data["Flux"] / max_flux
         sorted_spectrum = pd.DataFrame(
@@ -63,7 +71,7 @@ def normalize_spectra(dataframes_dict):
     return processed_data
 
 
-def process_spectra(file_paths): # TODO - rewrite this function. 
+def process_spectra(file_paths): # TODO - rewrite this function.
     all_spectra = []
     read_spectra_data = read_spectra(*file_paths, comment="#")
     for spectra_data in read_spectra_data:
@@ -73,3 +81,6 @@ def process_spectra(file_paths): # TODO - rewrite this function.
         split_cols.columns = [f"col_{i}" for i in range(len(split_cols.columns))]
         all_spectra.append(split_cols)
     return all_spectra
+
+def split(dataframe):
+    return tuple(dataframe[[col]] for col in dataframe.columns)

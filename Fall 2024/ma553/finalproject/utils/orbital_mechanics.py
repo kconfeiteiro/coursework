@@ -49,7 +49,7 @@ def keplerian_to_cartesian(
         [[np.cos(omega), -np.sin(omega), 0], [np.sin(omega), np.cos(omega), 0], [0, 0, 1]]
     )
 
-    r2 = np.array([
+    r2 = np.array([ # NOTE - can use numexpr
         [1, 0, 0],
         [0, np.cos(inclination), -np.sin(inclination)],
         [0, np.sin(inclination), np.cos(inclination)],
@@ -60,7 +60,7 @@ def keplerian_to_cartesian(
         [0, 0, 1],
     ])
 
-    R = r1 @ r2 @ r3
+    R = r1 @ r2 @ r3 # NOTE - test if faster than numba, numexpr, or numpy
 
     # position and velocity in the inertial frame
 
@@ -132,7 +132,7 @@ def propagate_orbit(initial_state, time, dt=60, mu=398600.4418, t=0):
     return state[:3], state[3:]
 
 
-def calculate_orbital_elements(semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly):
+def calculate_orbital_elements(semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly): #FIXME - finish function
     # Example implementation of converting orbital parameters to state vector
     # This is a placeholder and should be replaced with actual calculations
     state_vector = np.array([semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly])

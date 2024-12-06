@@ -4,6 +4,8 @@ from mpi4py import MPI
 from utils.genetic_algorithm import initialize_population, evaluate_fitness, evolve_population
 from utils.metrics import time_function
 
+# TODO - get mpi to run using custom command
+
 # @profile
 @time_function()
 def main():
