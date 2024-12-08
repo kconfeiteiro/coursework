@@ -1,5 +1,5 @@
 import numpy as np
-from utils.orbital_mechanics import propagate_orbit, calculate_orbital_elements
+from utils.orbital_mechanics import rk4_method, calculate_orbital_elements
 
 def initialize_population(pop_size):
     # Generate initial population of random orbital parameters
@@ -19,7 +19,7 @@ def evaluate_fitness(population, target_trajectory):
     fitness_scores = []
     for individual in population:
         initial_state = calculate_orbital_elements(*individual)
-        propagated_state = propagate_orbit(initial_state, time=3600)  # Example propagation time
+        propagated_state = rk4_method(initial_state, time=3600)  # Example propagation time
         fitness = -np.linalg.norm(propagated_state - target_trajectory.reshape(2, 3))  # Negative distance to target
         fitness_scores.append(fitness)
     return fitness_scores

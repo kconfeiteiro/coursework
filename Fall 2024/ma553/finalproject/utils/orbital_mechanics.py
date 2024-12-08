@@ -1,5 +1,7 @@
-from line_profiler import profile
+import numexpr as ne
 import numpy as np
+from line_profiler import profile
+
 
 def keplerian_to_cartesian(
     semi_major_axis,
@@ -45,14 +47,15 @@ def keplerian_to_cartesian(
 
     # rotation matrices
 
-    r1 = np.array(
+    r1 = np.array(  # TODO - can use numexpr
         [[np.cos(omega), -np.sin(omega), 0], [np.sin(omega), np.cos(omega), 0], [0, 0, 1]]
     )
 
-    r2 = np.array([ # NOTE - can use numexpr
-        [1, 0, 0],
-        [0, np.cos(inclination), -np.sin(inclination)],
-        [0, np.sin(inclination), np.cos(inclination)],
+    r2 = np.array(
+        [  # TODO - can use numexpr
+            [1, 0, 0],
+            [0, np.cos(inclination), -np.sin(inclination)],
+            [0, np.sin(inclination), np.cos(inclination)],
     ])
     r3 = np.array([
         [np.cos(argument_of_periapsis), -np.sin(argument_of_periapsis), 0],
@@ -60,7 +63,7 @@ def keplerian_to_cartesian(
         [0, 0, 1],
     ])
 
-    R = r1 @ r2 @ r3 # NOTE - test if faster than numba, numexpr, or numpy
+    R = r1 @ r2 @ r3  # NOTE - test if faster than numba, numexpr, or numpy
 
     # position and velocity in the inertial frame
 
@@ -71,7 +74,9 @@ def keplerian_to_cartesian(
 
 
 
+
 def cartesian_to_keplerian(state_vector, gravitational_parameter=398600.4418):
+    # unpack position and velocity vectors
     position_vector, velocity_vector = state_vector
 
     # compute specific angular momentum
@@ -97,16 +102,18 @@ def cartesian_to_keplerian(state_vector, gravitational_parameter=398600.4418):
         eccentricity_vector[2] / np.sin(inclination),
         eccentricity_vector[0] * np.cos(omega) + eccentricity_vector[1] * np.sin(omega),
     )
+
     true_anomaly = np.arctan2(
         np.dot(np.cross(eccentricity_vector, position_vector), specific_angular_momentum)
         / specific_angular_momentum_magnitude,
         np.dot(eccentricity_vector, position_vector),
     )
+
     e = 2 * np.arctan2(
         np.sqrt(1 - eccentricity) * np.tan(true_anomaly / 2), np.sqrt(1 + eccentricity)
     )
-    mean_anomaly = e - eccentricity * np.sin(e)
 
+    mean_anomaly = e - eccentricity * np.sin(e)
     return semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly
 
 
@@ -116,24 +123,52 @@ def acceleration(state, mu):
     a = -mu * r / r_norm**3
     return np.hstack((state[3:], a))
 
-@profile
-def propagate_orbit(initial_state, time, dt=60, mu=398600.4418, t=0):
 
+def rk4_method(initial_state, time, dt=60, mu=398600.4418, t=0):
     state = np.array(initial_state)
     while t < time:
         k1 = dt * acceleration(state, mu)
         k2 = dt * acceleration(state + 0.5 * k1, mu)
         k3 = dt * acceleration(state + 0.5 * k2, mu)
         k4 = dt * acceleration(state + k3, mu)
-
         state += (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
         t += dt
 
     return state[:3], state[3:]
 
 
-def calculate_orbital_elements(semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly): #FIXME - finish function
-    # Example implementation of converting orbital parameters to state vector
-    # This is a placeholder and should be replaced with actual calculations
-    state_vector = np.array([semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly])
-    return state_vector
+def calculate_orbital_elements(
+    semi_major_axis, eccentricity, inclination, omega, argument_of_periapsis, mean_anomaly
+):
+    # Solve Kepler's equation for E
+    E = mean_anomaly
+    for _ in range(100):  # Iterative solution
+        E = mean_anomaly + eccentricity * np.sin(E)
+
+    # Compute the true anomaly
+    true_anomaly = ne.evaluate('2 * arctan2(sqrt(1 + eccentricity) * sin(E / 2), sqrt(1 - eccentricity) * cos(E / 2))')
+
+    # Compute the distance
+    orbital_distance = ne.evaluate('semi_major_axis * (1 - eccentricity * cos(E))')
+
+    # Position in the orbital plane
+    x_orb = ne.evaluate('orbital_distance * cos(true_anomaly)')
+    y_orb = ne.evaluate('orbital_distance * sin(true_anomaly)')
+
+    # Velocity in the orbital plane
+    vx_orb = ne.evaluate('-sqrt(398600.4418 / (semi_major_axis * (1 - eccentricity**2))) * sin(E)')
+    vy_orb = ne.evaluate('sqrt(398600.4418 / (semi_major_axis * (1 - eccentricity**2))) * sqrt(1 - eccentricity**2) * cos(E)')
+
+    # Rotation matrices
+    r1 = np.array([[np.cos(omega), -np.sin(omega), 0], [np.sin(omega), np.cos(omega), 0], [0, 0, 1]])
+    r2 = np.array([[1, 0, 0], [0, np.cos(inclination), -np.sin(inclination)], [0, np.sin(inclination), np.cos(inclination)]])
+    r3 = np.array([[np.cos(argument_of_periapsis), -np.sin(argument_of_periapsis), 0], [np.sin(argument_of_periapsis), np.cos(argument_of_periapsis), 0], [0, 0, 1]])
+
+    R = r1 @ r2 @ r3
+
+    # Position and velocity in the inertial frame
+    position_vector = R @ np.array([x_orb, y_orb, 0])
+    velocity_vector = R @ np.array([vx_orb, vy_orb, 0])
+
+    return position_vector, velocity_vector
