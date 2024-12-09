@@ -1,0 +1,24 @@
+[2024-12-08 16:31:06]
+Population Size: 100
+Number of generations: 50
+Number of workers: 3
+Target Trajectory: [[7.1e+03 1.8e-01 9.0e-02 2.8e-02 7.7e+00 1.8e-02]]
+Best Fitness (Numpy): -1776.061018639459
+Best Fitness (NumExpr): -2063.7655709094597
+Best Solution (Numpy): [7.17328455e+03 1.67746827e-01 1.73803224e+00 5.45986780e+00
+ 3.21586876e+00 3.67075885e+00]
+Best Solution (NumExpr): [7.14501422e+03 2.28833944e-01 1.78749265e+00 4.92634553e+00
+ 4.10391561e-01 2.42318843e+00]
+Total Time: 20.3318989276886 seconds
+[2024-12-08 16:32:23]
+Population Size: 100
+Number of generations: 50
+Number of workers: 4
+Target Trajectory: [[7.1e+03 1.8e-01 9.0e-02 2.8e-02 7.7e+00 1.8e-02]]
+Best Fitness (Numpy): -1369.6614047959526
+Best Fitness (NumExpr): -553.9113612914003
+Best Solution (Numpy): [7.34173019e+03 1.22209283e-01 2.92507959e+00 3.95712091e+00
+ 1.20137010e+00 1.93347189e-02]
+Best Solution (NumExpr): [ 7.65416606e+03 -1.28391550e-02  1.50278145e+00  4.86866328e+00
+  3.86578915e+00  6.93506803e-01]
+Total Time: 19.8709819316864 seconds
