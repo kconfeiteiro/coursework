@@ -1,38 +1,62 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import utils.tools as tl
+import glob
 
+# read data table
+files = [
+    "data/Observed data/20241116/HD 237190/HD237190_r30s_20241116_DataTable.tbl",
+    "data/Observed data/20241107/HD 213306/HD213306_r30s_20241107_table.tbl",
+    "data/Observed data/20241116/HD 213306/red-filter/HD213306_20241116_r30s_Table.tbl"
+]
 
-# %% read data table
-table1 = "data/Observed data/20241123/HD 21447 (comparison star)/pipelineout/Table-HD21447-g15s-20241123.tbl"
-test1 = tl.read_table(table1)
-test1 = tl.calc_instrumental_magnitude(test1)
-test1
+for file in files:
+    print(f"Processing file: `{file}`")
+    data = tl.read_table(file)
+    data = tl.calc_instrumental_magnitude(data, calc_col="SourceSky_T1")
+    data = data.dropna(axis=1)
 
-# %% read data table
-fig2, axes2 = plt.subplots(2, 1, figsize=(10, 7), tight_layout=True)
-axes2[0].plot(test1["BJD_TDB"], test1["SourceSky2"])
-axes2[1].plot(test1["AIRMASS"], test1["SourceSky2"])
+    target, obs_date = file.split("/")[3], file.split("/")[2]
+    time, flux, mags = "BJD_TDB", "rel_flux_T1", "SourceSky_T12"
 
-axes2[0].set_ylabel("Instrumental Magnitudes")
-axes2[1].set_ylabel("Instrumental Magnitudes")
-axes2[0].set_xlabel("Time (BJD_TBD)")
-axes2[1].set_xlabel("Airmass")
+    # read data table
+    fig2, axes2 = plt.subplots(3, 1, figsize=(10, 8), tight_layout=True)
 
-axes2[0].set_title("Light Curve Pot - 11/23/2024")
-axes2[1].set_title("Airmass vs. Time")
-fig2.suptitle("HD 237190 (cepheid) - Light Curve & Airmass")
-fig2.savefig(r"figures/HD_237190_cepheid_Light_Curve_Airmass.jpg")
+    axes2[1].plot(data["AIRMASS"], data[mags])
+    axes2[0].plot(data[time], data[mags])
+    axes2[2].plot(data[time], data["rel_flux_T1"])
 
-# %% read data table
-# table2 = "data/Observed data/20241116/HD 237190/HD237190-g30s-table.tbl"
-# test2 = tl.read_table(table2)
+    axes2[0].set_ylabel("Instrumental Magnitudes")
+    axes2[0].set_xlabel(f"Time ({time})")
 
-# fig3, axes3 = plt.subplots(figsize=(10, 7), tight_layout=True)
-# axes3.plot(test2["JD_UTC"], test2["rel_flux_T1"])
-# axes3.set_ylabel("Instrumental Magnitudes")
-# axes3.set_xlabel("Time (BJD_TBD)")
-# fig3.suptitle("HD 237190 Light Curve (cepheid) - Green Filter. Taken 11/16/2024", size=15)
-# fig3.savefig(r"figures/HD_237190_Light_Curve_cepheid_Green_Filter_Taken_11_16_2024.jpg")
-plt.show()
+    axes2[1].set_ylabel("Instrumental Magnitudes")
+    axes2[1].set_xlabel("Airmass")
 
+    axes2[2].set_ylabel("Relative Flux")
+    axes2[2].set_xlabel(f"Time ({time})")
+
+    axes2[0].set_title("Light Curve")
+    axes2[1].set_title("Airmass vs. Instrumental Magnitude")
+    axes2[2].set_title(f"{target} Light Curve")
+
+    fig2.suptitle(f"{target} (cepheid) Light Curve & Airmass [red filter] - {tl.format_date(obs_date)}")
+    fig2.savefig(f"figures/for_paper/{target}_{obs_date}_lightcurve_magnitudeplot_airmassplot.jpg")
+
+    # calculate periodogram
+    periods, power, frequency = tl.generate_periodogram(data)
+
+    fig, axes = plt.subplots(2, 1, figsize=(10, 8), tight_layout=True)
+    axes[0].plot(periods, power)
+    axes[1].plot(frequency, power)
+
+    axes[0].set_xlabel("Periods")
+    axes[0].set_ylabel("Power")
+    axes[0].set_title("Period vs. Power")
+
+    axes[1].set_xlabel("Frequency")
+    axes[1].set_ylabel("Power")
+    axes[1].set_title("Frequency vs Power")
+
+    fig.suptitle(f"Periodogram and Frequency Analysis of {target} ({tl.format_date(obs_date)})")
+    fig.savefig(f"figures/for_paper/{target}_{obs_date}_periodogram_frequency_analysis.jpg")

@@ -5,6 +5,7 @@ import astropy as ap
 import numpy as np
 import os
 import glob
+from astropy.timeseries import LombScargle
 
 def read_fits_directory(directory_path, file_pattern="*.fits"):
     """
@@ -81,3 +82,42 @@ def plot_fits_image(file, title=None, save_as=None):
     fig.suptitle(title)
     if save_as:
         fig.savefig(save_as)
+
+
+def generate_periodogram(df, cols=["BJD_TDB", "rel_flux_T1"]):
+    """
+    Calculates the periods using the Lomb-Scargle periodogram method.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame containing flux and time columns.
+    flux_col (str): The name of the flux column in the DataFrame. Default is 'flux'.
+    time_col (str): The name of the time column in the DataFrame. Default is 'time'.
+
+    Returns:
+    periods (numpy.ndarray): The array of periods.
+    power (numpy.ndarray): The power of the periodogram.
+    """
+    time = df[cols[0]].values
+    flux = df[cols[1]].values
+
+    frequency, power = LombScargle(time, flux).autopower()
+    periods = 1 / frequency
+
+    return periods, power, frequency
+
+
+def format_date(date_str):
+    """
+    Converts a date string from 'YYYYMMDD' format to 'MM/DD/YYYY' format.
+
+    Parameters:
+    date_str (str): The date string in 'YYYYMMDD' format.
+
+    Returns:
+    formatted_date (str): The date string in 'MM/DD/YYYY' format.
+    """
+    year = date_str[:4]
+    month = date_str[4:6]
+    day = date_str[6:]
+    formatted_date = f"{month}/{day}/{year}"
+    return formatted_date
